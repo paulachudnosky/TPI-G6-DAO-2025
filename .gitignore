@@ -1,0 +1,24 @@
+# Entorno virtual de Python
+.venv/
+venv/
+env/
+
+# Archivos de caché y compilados de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Archivo de la base de datos de SQLite
+# El esquema está en database.py, pero los datos son locales.
+*.db
+*.sqlite
+*.sqlite3
+
+# Carpetas de configuración del editor de código
+.vscode/
+.idea/
+
+# Otros archivos de sistema operativo
+.DS_Store
+Thumbs.db
