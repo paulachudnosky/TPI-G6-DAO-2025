@@ -1,15 +1,36 @@
-# database.py
 import sqlite3
+import os
 
-def crear_base_de_datos():
+# --- Configuración Centralizada de la Base de Datos ---
+
+# Obtenemos la ruta absoluta del directorio donde se encuentra este script
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Definimos la ruta completa al archivo de la base de datos
+DB_PATH = os.path.join(BASE_DIR, 'turnos.db')
+
+def get_db_connection():
+    """
+    Establece la conexión con la base de datos usando la ruta absoluta.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    # Habilitar claves foráneas
+    conn.execute("PRAGMA foreign_keys = ON;")
+    return conn
+
+def crear_base_de_datos_si_no_existe():
+    """
+    Crea la base de datos y las tablas si el archivo no existe.
+    """
+    if not os.path.exists(DB_PATH):
+        print(f"Creando base de datos en: {DB_PATH}")
+        crear_tablas()
+    
+def crear_tablas():
     """Crea la base de datos y las tablas si no existen."""
-    conn = sqlite3.connect('turnos.db')
+    conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Usamos TEXT para las fechas para simplificar, SQLite es flexible con los tipos.
-    # NOT NULL asegura que el campo siempre tenga un valor.
-    # AUTOINCREMENT se encarga de generar los IDs automáticamente.
-    
+    # Paciente
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS Paciente (
         id_paciente INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -17,10 +38,11 @@ def crear_base_de_datos():
         apellido TEXT NOT NULL,
         dni TEXT NOT NULL UNIQUE,
         fecha_nacimiento TEXT,
-        email TEXT,
+        email TEXT UNIQUE,
         telefono TEXT
     )''')
 
+    # Especialidad
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS Especialidad (
         id_especialidad INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,24 +50,29 @@ def crear_base_de_datos():
         descripcion TEXT
     )''')
 
+    # Medico
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS Medico (
         id_medico INTEGER PRIMARY KEY AUTOINCREMENT,
         nombre TEXT NOT NULL,
         apellido TEXT NOT NULL,
         matricula TEXT NOT NULL UNIQUE,
-        email TEXT
+        email TEXT UNIQUE
     )''')
     
+    # Historial Clinico (id_paciente es UNIQUE para la relación 1-a-1)
     cursor.execute('''
-    CREATE TABLE IF NOT EXISTS MedicoEspecialidad (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        id_medico INTEGER NOT NULL,
-        id_especialidad INTEGER NOT NULL,
-        FOREIGN KEY (id_medico) REFERENCES Medico (id_medico),
-        FOREIGN KEY (id_especialidad) REFERENCES Especialidad (id_especialidad)
+    CREATE TABLE IF NOT EXISTS HistorialClinico (
+        id_historial INTEGER PRIMARY KEY AUTOINCREMENT,
+        id_paciente INTEGER NOT NULL UNIQUE,
+        fecha_creacion TEXT NOT NULL,
+        fecha_actualizacion TEXT NOT NULL,
+        grupo_sanguineo TEXT,
+        estado TEXT,
+        FOREIGN KEY (id_paciente) REFERENCES Paciente (id_paciente)
     )''')
-
+    
+    # Horario de atención
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS HorarioAtencion (
         id_horario INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -56,51 +83,83 @@ def crear_base_de_datos():
         FOREIGN KEY (id_medico) REFERENCES Medico (id_medico)
     )''')
     
+    # Tipo consulta 
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS TipoConsulta (
+        id_tipo INTEGER PRIMARY KEY AUTOINCREMENT,
+        nombre TEXT NOT NULL UNIQUE,
+        descripcion TEXT,
+        duracion_minutos INTEGER
+    )''')
+    
+    # Tipo Medicamento
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS TipoMedicamento (
+        id_tipo_medicamento INTEGER PRIMARY KEY AUTOINCREMENT,
+        nombre TEXT NOT NULL UNIQUE
+    )''')
+    
+    # Medicamento
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS Medicamento (
+        id_medicamento INTEGER PRIMARY KEY AUTOINCREMENT,
+        id_tipo_medicamento INTEGER NOT NULL,
+        codigo_nacional TEXT UNIQUE,
+        nombre TEXT NOT NULL,
+        descripcion TEXT,
+        FOREIGN KEY (id_tipo_medicamento) REFERENCES TipoMedicamento (id_tipo_medicamento)
+    )''')
+    
+    # Turno (id_especialidad puede ser nulo)
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS Turno (
         id_turno INTEGER PRIMARY KEY AUTOINCREMENT,
         id_paciente INTEGER NOT NULL,
         id_medico INTEGER NOT NULL,
-        id_especialidad INTEGER NOT NULL,
-        fecha_hora TEXT NOT NULL, -- Formato ISO: "AAAA-MM-DD HH:MM:SS"
-        estado TEXT NOT NULL, -- "Programado", "Cancelado", "Realizado"
+        id_especialidad INTEGER, -- Puede ser nulo si es consulta general
+        fecha_hora TEXT NOT NULL,
+        estado TEXT NOT NULL,
         FOREIGN KEY (id_paciente) REFERENCES Paciente (id_paciente),
         FOREIGN KEY (id_medico) REFERENCES Medico (id_medico),
         FOREIGN KEY (id_especialidad) REFERENCES Especialidad (id_especialidad)
     )''')
     
-    # Añadimos HistorialClinico y Receta como se pide
+    # Consulta
     cursor.execute('''
-    CREATE TABLE IF NOT EXISTS HistorialClinico (
-        id_historial INTEGER PRIMARY KEY AUTOINCREMENT,
-        id_paciente INTEGER NOT NULL,
-        id_medico INTEGER NOT NULL,
+    CREATE TABLE IF NOT EXISTS Consulta (
+        id_consulta INTEGER PRIMARY KEY AUTOINCREMENT,
         id_turno INTEGER NOT NULL,
-        fecha_hora TEXT NOT NULL,
-        diagnostico TEXT,
+        id_historial INTEGER NOT NULL,
+        motivo_consulta TEXT,
         observaciones TEXT,
-        FOREIGN KEY (id_paciente) REFERENCES Paciente (id_paciente),
-        FOREIGN KEY (id_medico) REFERENCES Medico (id_medico),
-        FOREIGN KEY (id_turno) REFERENCES Turno (id_turno)
+        FOREIGN KEY (id_turno) REFERENCES Turno (id_turno),
+        FOREIGN KEY (id_historial) REFERENCES HistorialClinico (id_historial)
     )''')
     
+    # Receta
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS Receta (
         id_receta INTEGER PRIMARY KEY AUTOINCREMENT,
-        id_paciente INTEGER NOT NULL,
-        id_medico INTEGER NOT NULL,
-        id_turno INTEGER NOT NULL,
+        id_consulta INTEGER NOT NULL,
         fecha_emision TEXT NOT NULL,
-        medicamento TEXT NOT NULL,
-        dosis TEXT,
-        FOREIGN KEY (id_paciente) REFERENCES Paciente (id_paciente),
-        FOREIGN KEY (id_medico) REFERENCES Medico (id_medico),
-        FOREIGN KEY (id_turno) REFERENCES Turno (id_turno)
+        vigencia_dias INTEGER,
+        indicaciones TEXT,
+        FOREIGN KEY (id_consulta) REFERENCES Consulta (id_consulta)
+    )''')
+    
+    # Medicamento Receta
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS MedicamentoReceta (
+        id_medicamento INTEGER NOT NULL,
+        id_receta INTEGER NOT NULL,
+        PRIMARY KEY (id_medicamento, id_receta),
+        FOREIGN KEY (id_medicamento) REFERENCES Medicamento (id_medicamento),
+        FOREIGN KEY (id_receta) REFERENCES Receta (id_receta)
     )''')
     
     conn.commit()
     conn.close()
-    print("Base de datos y tablas creadas exitosamente.")
+    print(f"Base de datos y tablas (actualizadas) creadas exitosamente en {DB_PATH}.")
 
 if __name__ == '__main__':
-    crear_base_de_datos()
+    crear_tablas()

@@ -1,4 +1,3 @@
-# models/medico.py
 class Medico:
     def __init__(self, nombre, apellido, matricula, email, id_medico=None):
         self.id_medico = id_medico
@@ -8,7 +7,6 @@ class Medico:
         self.email = email
 
     def to_dict(self):
-        """Convierte el objeto Medico a un diccionario."""
         return {
             "id_medico": self.id_medico,
             "nombre": self.nombre,
