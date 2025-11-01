@@ -12,6 +12,10 @@ Para instalar las dependencias:
 
 * pip install -r requirements.txt
 
+Para poblar la base de datos:
+
+* python seed.py
+
 Para correr el backend:
 
 * python app.py
