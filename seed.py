@@ -94,16 +94,39 @@ def poblar_base_de_datos():
 
         # --- 7. Poblar Horarios de Atención ---
         horarios = [
-            (1, 'Lunes', '09:00', '13:00'),
+            (1, 'Lunes', '09:00', '13:00'), # Dra. García (ID 1)
             (1, 'Miércoles', '09:00', '13:00'),
-            (2, 'Martes', '14:00', '18:00'),
+            (2, 'Martes', '14:00', '18:00'), # Dr. Lopez (ID 2)
             (2, 'Jueves', '14:00', '18:00'),
-            (3, 'Viernes', '08:00', '12:00')
+            (3, 'Viernes', '08:00', '12:00') # Dra. Martinez (ID 3)
         ]
         cursor.executemany("INSERT OR IGNORE INTO HorarioAtencion (id_medico, dia_semana, hora_inicio, hora_fin) VALUES (?, ?, ?, ?)", horarios)
 
+        # --- 8. Poblar Turnos de Ejemplo ---
+        cursor.execute("SELECT COUNT(*) FROM Turno")
+        if cursor.fetchone()[0] == 0:
+            print("Poblando turnos...")
+            # (id_paciente, id_medico, id_especialidad, id_tipo_consulta, fecha_hora_inicio, fecha_hora_fin, estado)
+            turnos_ejemplo = [
+                # Turno VÁLIDO para Dra. García (ID 1) el próximo Lunes a las 10:00 (Tipo Consulta 2 = 15 min)
+                # (Asumimos que el 2025-11-03 es Lunes)
+                (1, 1, 1, 2, '2025-11-03 10:00:00', '2025-11-03 10:15:00', 'Programado'),
+                
+                # Turno VÁLIDO para Dra. García (ID 1) el mismo Lunes a las 10:30 (Tipo Consulta 1 = 30 min)
+                (2, 1, 1, 1, '2025-11-03 10:30:00', '2025-11-03 11:00:00', 'Programado'),
+                
+                # Turno VÁLIDO para Dr. Lopez (ID 2) el próximo Martes a las 15:00 (Tipo Consulta 2 = 15 min)
+                # (Asumimos que el 2025-11-04 es Martes)
+                (3, 2, 4, 2, '2025-11-04 15:00:00', '2025-11-04 15:15:00', 'Programado')
+            ]
+            cursor.executemany(
+                """INSERT INTO Turno 
+                   (id_paciente, id_medico, id_especialidad, id_tipo_consulta, fecha_hora_inicio, fecha_hora_fin, estado) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                turnos_ejemplo
+            )
+
         # --- COMMIT FINAL ---
-        # Se confirman todos los cambios a la vez.
         conn.commit()
         print("Base de datos poblada con datos de ejemplo exitosamente.")
     

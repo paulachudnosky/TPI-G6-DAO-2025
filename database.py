@@ -116,12 +116,15 @@ def crear_tablas():
         id_turno INTEGER PRIMARY KEY AUTOINCREMENT,
         id_paciente INTEGER NOT NULL,
         id_medico INTEGER NOT NULL,
-        id_especialidad INTEGER, -- Puede ser nulo si es consulta general
-        fecha_hora TEXT NOT NULL,
+        id_especialidad INTEGER, 
+        id_tipo_consulta INTEGER NOT NULL, 
+        fecha_hora_inicio TEXT NOT NULL,   
+        fecha_hora_fin TEXT NOT NULL,      
         estado TEXT NOT NULL,
         FOREIGN KEY (id_paciente) REFERENCES Paciente (id_paciente),
         FOREIGN KEY (id_medico) REFERENCES Medico (id_medico),
-        FOREIGN KEY (id_especialidad) REFERENCES Especialidad (id_especialidad)
+        FOREIGN KEY (id_especialidad) REFERENCES Especialidad (id_especialidad),
+        FOREIGN KEY (id_tipo_consulta) REFERENCES TipoConsulta (id_tipo) -- CAMPO NUEVO
     )''')
     
     # Consulta

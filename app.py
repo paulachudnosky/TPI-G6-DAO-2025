@@ -8,7 +8,8 @@ from dao import (
     tipo_consulta_dao,  
     tipo_medicamento_dao,
     medicamento_dao,
-    horario_atencion_dao
+    horario_atencion_dao,
+    turno_dao
 )
 # Importamos la función para crear la BD
 from database import crear_base_de_datos_si_no_existe
@@ -214,6 +215,75 @@ def get_horarios_por_medico(id_medico):
     if horarios:
         return jsonify(horarios)
     return jsonify({"error": "No se encontraron horarios para el médico"}), 404
+
+# --- RUTAS DE TURNOS ---
+@app.route('/turnos', methods=['GET'])
+def get_turnos():
+    """Obtiene todos los turnos."""
+    turnos = turno_dao.obtener_turnos()
+    return jsonify(turnos)
+
+@app.route('/turnos/medico/<int:id_medico>', methods=['GET'])
+def get_turnos_por_medico(id_medico):
+    """Obtiene todos los turnos de un médico."""
+    turnos = turno_dao.obtener_turnos_por_medico(id_medico)
+    return jsonify(turnos)
+
+@app.route('/turnos', methods=['POST'])
+def add_turno():
+    """Crea un nuevo turno con validación de disponibilidad."""
+    data = request.get_json()
+    
+    id_paciente = data.get('id_paciente')
+    id_medico = data.get('id_medico')
+    id_tipo_consulta = data.get('id_tipo_consulta')
+    fecha_hora_inicio = data.get('fecha_hora_inicio') # Formato "AAAA-MM-DD HH:MM:SS"
+    id_especialidad = data.get('id_especialidad') # Opcional
+    
+    if not all([id_paciente, id_medico, id_tipo_consulta, fecha_hora_inicio]):
+        return jsonify({"error": "Faltan datos obligatorios (paciente, medico, tipo_consulta, fecha_hora_inicio)"}), 400
+    
+    # La lógica de validación y creación está en el DAO
+    exito, mensaje = turno_dao.crear_turno(
+        id_paciente,
+        id_medico,
+        id_tipo_consulta,
+        fecha_hora_inicio,
+        id_especialidad
+    )
+    
+    if exito:
+        return jsonify({"mensaje": mensaje}), 201
+    else:
+        # Si no es exitoso, el mensaje contiene el error (ej: "Horario no disponible")
+        return jsonify({"error": mensaje}), 409 # 409 Conflict
+
+@app.route('/turnos/<int:id_turno>/estado', methods=['PUT'])
+def update_turno_estado(id_turno):
+    """Actualiza el estado de un turno (ej: Cancelado, Realizado)."""
+    data = request.get_json()
+    nuevo_estado = data.get('estado')
+    
+    if not nuevo_estado:
+        return jsonify({"error": "El campo 'estado' es obligatorio"}), 400
+        
+    exito, mensaje = turno_dao.actualizar_estado_turno(id_turno, nuevo_estado)
+    
+    if exito:
+        return jsonify({"mensaje": mensaje})
+    else:
+        return jsonify({"error": mensaje}), 404
+
+@app.route('/turnos/<int:id_turno>', methods=['DELETE'])
+def delete_turno(id_turno):
+    """Elimina un turno."""
+    exito, mensaje = turno_dao.eliminar_turno(id_turno)
+    
+    if exito:
+        return jsonify({"mensaje": mensaje})
+    else:
+        return jsonify({"error": mensaje}), 404
+
 
 if __name__ == '__main__':
     crear_base_de_datos_si_no_existe()
