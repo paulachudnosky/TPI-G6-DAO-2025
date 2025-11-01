@@ -1,4 +1,3 @@
-
 class Paciente:
     def __init__(self, nombre, apellido, dni, fecha_nacimiento, email, telefono, id_paciente=None):
         self.id_paciente = id_paciente
@@ -10,7 +9,6 @@ class Paciente:
         self.telefono = telefono
 
     def to_dict(self):
-        """Convierte el objeto Paciente a un diccionario."""
         return {
             "id_paciente": self.id_paciente,
             "nombre": self.nombre,

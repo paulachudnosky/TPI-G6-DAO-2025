@@ -1,5 +1,17 @@
 from flask import Flask, jsonify, request
-from dao import especialidad_dao, paciente_dao, medico_dao 
+# Importamos todos los DAOs
+from dao import (
+    especialidad_dao, 
+    paciente_dao, 
+    medico_dao,
+    historial_clinico_dao,
+    tipo_consulta_dao,  
+    tipo_medicamento_dao,
+    medicamento_dao,
+    horario_atencion_dao
+)
+# Importamos la función para crear la BD
+from database import crear_base_de_datos_si_no_existe
 
 app = Flask(__name__)
 
@@ -21,7 +33,6 @@ def add_especialidad():
     especialidad_dao.crear_especialidad(nombre, descripcion)
     return jsonify({"mensaje": "Especialidad creada exitosamente"}), 201
 
-# Ruta para obtener, actualizar y eliminar una especialidad específica
 @app.route('/especialidades/<int:id_especialidad>', methods=['GET', 'PUT', 'DELETE'])
 def handle_especialidad(id_especialidad):
     if request.method == 'GET':
@@ -69,9 +80,8 @@ def add_paciente():
         data.get('email'),
         data.get('telefono')
     )
-    return jsonify({"mensaje": "Paciente creado exitosamente"}), 201
+    return jsonify({"mensaje": "Paciente y su historial creados exitosamente"}), 201
 
-# Ruta para obtener, actualizar y eliminar un paciente específico
 @app.route('/pacientes/<int:id_paciente>', methods=['GET', 'PUT', 'DELETE'])
 def handle_paciente(id_paciente):
     if request.method == 'GET':
@@ -82,6 +92,9 @@ def handle_paciente(id_paciente):
 
     elif request.method == 'PUT':
         data = request.get_json()
+        if not data.get('nombre') or not data.get('apellido') or not data.get('dni'):
+            return jsonify({"error": "Nombre, apellido y DNI son obligatorios"}), 400
+            
         paciente_dao.actualizar_paciente(
             id_paciente,
             data.get('nombre'),
@@ -95,7 +108,7 @@ def handle_paciente(id_paciente):
 
     elif request.method == 'DELETE':
         paciente_dao.eliminar_paciente(id_paciente)
-        return jsonify({"mensaje": "Paciente eliminado exitosamente"})
+        return jsonify({"mensaje": "Paciente y su historial eliminados exitosamente"})
 
 # --- RUTAS DE MÉDICOS ---
 @app.route('/medicos', methods=['GET'])
@@ -121,7 +134,6 @@ def add_medico():
     )
     return jsonify({"mensaje": "Médico creado exitosamente"}), 201
 
-# Ruta para obtener, actualizar y eliminar un médico específico
 @app.route('/medicos/<int:id_medico>', methods=['GET', 'PUT', 'DELETE'])
 def handle_medico(id_medico):
     if request.method == 'GET':
@@ -132,6 +144,9 @@ def handle_medico(id_medico):
 
     elif request.method == 'PUT':
         data = request.get_json()
+        if not data.get('nombre') or not data.get('apellido') or not data.get('matricula'):
+            return jsonify({"error": "Nombre, apellido y matrícula son obligatorios"}), 400
+
         medico_dao.actualizar_medico(
             id_medico,
             data.get('nombre'),
@@ -145,8 +160,61 @@ def handle_medico(id_medico):
         medico_dao.eliminar_medico(id_medico)
         return jsonify({"mensaje": "Médico eliminado exitosamente"})
 
+# --- RUTAS DE HISTORIAL CLÍNICO ---
+@app.route('/historial_clinico', methods=['GET'])
+def get_historiales():
+    historiales = historial_clinico_dao.obtener_historiales()
+    return jsonify(historiales)
+
+@app.route('/historial_clinico/<int:id_historial>', methods=['GET', 'PUT'])
+def handle_historial(id_historial):
+    if request.method == 'GET':
+        historial = historial_clinico_dao.obtener_historial_por_id(id_historial)
+        if historial:
+            return jsonify(historial)
+        return jsonify({"error": "Historial no encontrado"}), 404
+    
+    elif request.method == 'PUT':
+        data = request.get_json()
+        historial_clinico_dao.actualizar_historial(
+            id_historial,
+            data.get('grupo_sanguineo'),
+            data.get('estado')
+        )
+        return jsonify({"mensaje": "Historial actualizado exitosamente"})
+
+@app.route('/historial_clinico/paciente/<int:id_paciente>', methods=['GET'])
+def get_historial_por_paciente(id_paciente):
+    historial = historial_clinico_dao.obtener_historial_por_id_paciente(id_paciente)
+    if historial:
+        return jsonify(historial)
+    return jsonify({"error": "No se encontró historial para el paciente"}), 404
+
+# --- RUTAS DE TIPO CONSULTA ---
+@app.route('/tipos_consulta', methods=['GET'])
+def get_tipos_consulta():
+    tipos = tipo_consulta_dao.obtener_tipos_consulta()
+    return jsonify(tipos)
+
+# --- RUTAS DE MEDICAMENTO Y TIPO MEDICAMENTO ---
+@app.route('/tipos_medicamento', methods=['GET'])
+def get_tipos_medicamento():
+    tipos = tipo_medicamento_dao.obtener_tipos_medicamento()
+    return jsonify(tipos)
+
+@app.route('/medicamentos', methods=['GET'])
+def get_medicamentos():
+    medicamentos = medicamento_dao.obtener_medicamentos()
+    return jsonify(medicamentos)
+
+# --- RUTAS DE HORARIO ATENCIÓN ---
+@app.route('/horarios_medico/<int:id_medico>', methods=['GET'])
+def get_horarios_por_medico(id_medico):
+    horarios = horario_atencion_dao.obtener_horarios_por_medico(id_medico)
+    if horarios:
+        return jsonify(horarios)
+    return jsonify({"error": "No se encontraron horarios para el médico"}), 404
 
 if __name__ == '__main__':
-    from database import crear_base_de_datos
-    crear_base_de_datos()
+    crear_base_de_datos_si_no_existe()
     app.run(debug=True)
