@@ -174,8 +174,15 @@ def handle_medico(id_medico):
         return jsonify({"mensaje": "Médico actualizado exitosamente"})
 
     elif request.method == 'DELETE':
-        medico_dao.eliminar_medico(id_medico)
-        return jsonify({"mensaje": "Médico eliminado exitosamente"})
+        try:
+            medico_dao.eliminar_medico(id_medico)
+            return jsonify({"mensaje": "Médico eliminado exitosamente"}), 200
+        except ValueError as e:
+            # Error de validación (ej: FOREIGN KEY - turnos asignados)
+            return jsonify({"error": str(e)}), 409  # 409 Conflict
+        except Exception as e:
+            # Otros errores
+            return jsonify({"error": f"Error al eliminar médico: {str(e)}"}), 500
 
 # --- RUTAS DE HISTORIAL CLÍNICO ---
 @app.route('/historial-clinico', methods=['GET'])

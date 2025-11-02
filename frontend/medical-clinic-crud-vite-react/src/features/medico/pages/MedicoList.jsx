@@ -32,9 +32,16 @@ const MedicoList = () => {
 
         try {
             await deleteMedico(id);
+            alert('✅ Médico eliminado exitosamente');
             await load();
         } catch (err) {
-            alert('Error al eliminar médico');
+            const errorMessage = err.response?.data?.error || err.message || 'Error desconocido';
+
+            if (err.response?.status === 409 || errorMessage.includes('turnos asignados')) {
+                alert('⚠️ No se puede eliminar este médico porque tiene turnos asignados. Primero debe cancelar o reasignar los turnos asociados.');
+            } else {
+                alert('❌ Error al eliminar médico: ' + errorMessage);
+            }
             console.error(err);
         }
     };

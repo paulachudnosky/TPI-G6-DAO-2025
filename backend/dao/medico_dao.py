@@ -116,9 +116,14 @@ def eliminar_medico(id_medico):
         # Por ahora, la BD fallará si hay un turno asociado (gracias a PRAGMA foreign_keys = ON).
         cursor.execute("DELETE FROM Medico WHERE id_medico = ?", (id_medico,))
         conn.commit()
+    except sqlite3.IntegrityError as e:
+        # Error específico de clave foránea (turnos asignados)
+        if "FOREIGN KEY constraint failed" in str(e):
+            raise ValueError("No se puede eliminar el médico porque tiene turnos asignados")
+        raise  # Re-lanzar si es otro tipo de IntegrityError
     except sqlite3.Error as e:
         print(f"Error al eliminar médico: {e}")
-        raise
+        raise # Propago error
     finally:
         if conn:
             conn.close()
