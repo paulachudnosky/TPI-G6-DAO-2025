@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import EspecialidadForm from '../components/EspecialidadForm';
-import especialidadService from '../services/especialidadService';
+import { getEspecialidad, updateEspecialidad } from '../services/especialidadService';
 
 const EspecialidadEdit = () => {
     const { id } = useParams();
@@ -13,7 +13,7 @@ const EspecialidadEdit = () => {
     useEffect(() => {
         const fetchEspecialidad = async () => {
             try {
-                const data = await especialidadService.getEspecialidadById(id);
+                const data = await getEspecialidad(id);
                 setEspecialidad(data);
             } catch (err) {
                 setError('Error fetching especialidad data');
@@ -27,7 +27,7 @@ const EspecialidadEdit = () => {
 
     const handleSubmit = async (updatedEspecialidad) => {
         try {
-            await especialidadService.updateEspecialidad(id, updatedEspecialidad);
+            await updateEspecialidad(id, updatedEspecialidad);
             navigate('/especialidad');
         } catch (err) {
             setError('Error updating especialidad');

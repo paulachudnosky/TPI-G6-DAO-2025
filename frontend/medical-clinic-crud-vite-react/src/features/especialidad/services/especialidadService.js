@@ -1,20 +1,28 @@
-import apiClient from '../../../services/apiClient';
+﻿import apiClient from '../../../services/apiClient';
 
-const RESOURCE = '/especialidades';
+const ESPECIALIDAD_BASE_URL = '/especialidades';
 
-// API de Especialidades: export default con métodos estándar
-const especialidadService = {
-    getAll: async () => (await apiClient.get(RESOURCE)).data,
-    getById: async (id) => (await apiClient.get(`${RESOURCE}/${id}`)).data,
-    create: async (payload) => (await apiClient.post(RESOURCE, payload)).data,
-    update: async (id, payload) => (await apiClient.put(`${RESOURCE}/${id}`, payload)).data,
-    remove: async (id) => (await apiClient.delete(`${RESOURCE}/${id}`)).data,
+export const getEspecialidades = async () => {
+    const response = await apiClient.get(ESPECIALIDAD_BASE_URL);
+    return response.data;
 };
 
-export default especialidadService;
+export const getEspecialidad = async (id) => {
+    const response = await apiClient.get(`${ESPECIALIDAD_BASE_URL}/${id}`);
+    return response.data;
+};
 
-// Exports con nombre opcionales (compatibilidad)
-export const getEspecialidadById = especialidadService.getById;
-export const createEspecialidad = especialidadService.create;
-export const updateEspecialidad = especialidadService.update;
-export const deleteEspecialidad = especialidadService.remove;
+export const createEspecialidad = async (especialidadData) => {
+    const response = await apiClient.post(ESPECIALIDAD_BASE_URL, especialidadData);
+    return response.data;
+};
+
+export const updateEspecialidad = async (id, especialidadData) => {
+    const response = await apiClient.put(`${ESPECIALIDAD_BASE_URL}/${id}`, especialidadData);
+    return response.data;
+};
+
+export const deleteEspecialidad = async (id) => {
+    const response = await apiClient.delete(`${ESPECIALIDAD_BASE_URL}/${id}`);
+    return response.data;
+};

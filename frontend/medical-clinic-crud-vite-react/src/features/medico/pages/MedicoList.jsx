@@ -64,6 +64,7 @@ const MedicoList = () => {
                             <th>Nombre</th>
                             <th>Apellido</th>
                             <th>Matrícula</th>
+                            <th>Especialidad</th>
                             <th>Email</th>
                             <th className="actions-cell">Acciones</th>
                         </tr>
@@ -71,7 +72,7 @@ const MedicoList = () => {
                     <tbody>
                         {medicos.length === 0 ? (
                             <tr>
-                                <td colSpan="6" className="empty-state">
+                                <td colSpan="7" className="empty-state">
                                     No hay médicos registrados
                                 </td>
                             </tr>
@@ -82,6 +83,11 @@ const MedicoList = () => {
                                     <td>{m.nombre}</td>
                                     <td>{m.apellido}</td>
                                     <td>{m.matricula}</td>
+                                    <td>
+                                        <span className="entity-badge entity-badge-success">
+                                            {m.especialidad_nombre || 'Sin especialidad'}
+                                        </span>
+                                    </td>
                                     <td>{m.email || <span className="entity-text-muted">Sin email</span>}</td>
                                     <td className="actions-cell">
                                         <button

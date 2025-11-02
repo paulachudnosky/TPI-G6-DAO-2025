@@ -22,12 +22,12 @@ def poblar_base_de_datos():
 
         # --- 2. Poblar Médicos ---
         medicos = [
-            ('Ana', 'García', 'MP-9876', 'ana.garcia@clinic.com'),
-            ('Carlos', 'Lopez', 'MP-5432', 'carlos.lopez@clinic.com'),
-            ('Laura', 'Martinez', 'MP-1122', 'laura.martinez@clinic.com'),
-            ('Roberto', 'Sanchez', 'MP-3344', 'roberto.sanchez@clinic.com')
+            ('Ana', 'García', 'MP-9876', 'ana.garcia@clinic.com', 1),
+            ('Carlos', 'Lopez', 'MP-5432', 'carlos.lopez@clinic.com', 2),
+            ('Laura', 'Martinez', 'MP-1122', 'laura.martinez@clinic.com', 3),
+            ('Roberto', 'Sanchez', 'MP-3344', 'roberto.sanchez@clinic.com', 4)
         ]
-        cursor.executemany("INSERT OR IGNORE INTO Medico (nombre, apellido, matricula, email) VALUES (?, ?, ?, ?)", medicos)
+        cursor.executemany("INSERT OR IGNORE INTO Medico (nombre, apellido, matricula, email, id_especialidad) VALUES (?, ?, ?, ?, ?)", medicos)
 
         # --- 3. Poblar Pacientes ---
         # (Solo si la tabla está vacía)

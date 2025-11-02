@@ -118,6 +118,7 @@ def handle_paciente(id_paciente):
 # --- RUTAS DE MÉDICOS ---
 @app.route('/medicos', methods=['GET'])
 def get_medicos():
+    """Obtiene todos los médicos con el nombre de su especialidad."""
     medicos = medico_dao.obtener_medicos()
     return jsonify(medicos)
 
@@ -128,15 +129,17 @@ def add_medico():
     apellido = data.get('apellido')
     matricula = data.get('matricula')
     email = data.get('email')
+    id_especialidad = data.get('id_especialidad')
     
-    if not nombre or not apellido or not matricula:
-        return jsonify({"error": "Nombre, apellido y matrícula son obligatorios"}), 400
+    if not nombre or not apellido or not matricula or not id_especialidad:
+        return jsonify({"error": "Nombre, apellido, matrícula y especialidad son obligatorios"}), 400
         
     medico_dao.crear_medico(
         nombre,
         apellido,
         matricula,
-        email
+        email,
+        id_especialidad
     )
     return jsonify({"mensaje": "Médico creado exitosamente"}), 201
 
@@ -150,15 +153,16 @@ def handle_medico(id_medico):
 
     elif request.method == 'PUT':
         data = request.get_json()
-        if not data.get('nombre') or not data.get('apellido') or not data.get('matricula'):
-            return jsonify({"error": "Nombre, apellido y matrícula son obligatorios"}), 400
+        if not data.get('nombre') or not data.get('apellido') or not data.get('matricula') or not data.get('id_especialidad'):
+            return jsonify({"error": "Nombre, apellido, matrícula y especialidad son obligatorios"}), 400
 
         medico_dao.actualizar_medico(
             id_medico,
             data.get('nombre'),
             data.get('apellido'),
             data.get('matricula'),
-            data.get('email')
+            data.get('email'),
+            data.get('id_especialidad')
         )
         return jsonify({"mensaje": "Médico actualizado exitosamente"})
 

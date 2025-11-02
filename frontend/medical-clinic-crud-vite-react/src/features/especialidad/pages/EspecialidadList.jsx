@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PageHeader from '../../../components/common/PageHeader';
 import EspecialidadTable from '../components/EspecialidadTable';
-import especialidadService from '../services/especialidadService';
+import { getEspecialidades, deleteEspecialidad } from '../services/especialidadService';
 
 const EspecialidadList = () => {
     const [especialidades, setEspecialidades] = useState([]);
@@ -11,7 +11,7 @@ const EspecialidadList = () => {
     useEffect(() => {
         const fetchEspecialidades = async () => {
             try {
-                const data = await especialidadService.getAll();
+                const data = await getEspecialidades();
                 setEspecialidades(data);
             } catch (err) {
                 setError(err.message);

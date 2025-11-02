@@ -57,7 +57,9 @@ def crear_tablas():
         nombre TEXT NOT NULL,
         apellido TEXT NOT NULL,
         matricula TEXT NOT NULL UNIQUE,
-        email TEXT UNIQUE
+        email TEXT UNIQUE,
+        id_especialidad INTEGER,
+        FOREIGN KEY (id_especialidad) REFERENCES Especialidad (id_especialidad)
     )''')
     
     # Historial Clinico (id_paciente es UNIQUE para la relación 1-a-1)

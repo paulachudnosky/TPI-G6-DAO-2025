@@ -82,6 +82,14 @@ const MedicoView = () => {
                     </span>
                 </div>
                 <div className="entity-detail-row">
+                    <span className="entity-detail-label">Especialidad:</span>
+                    <span className="entity-detail-value">
+                        <span className="entity-badge entity-badge-success">
+                            {medico.especialidad_nombre || 'Sin especialidad'}
+                        </span>
+                    </span>
+                </div>
+                <div className="entity-detail-row">
                     <span className="entity-detail-label">Email:</span>
                     <span className="entity-detail-value">
                         {medico.email || <span className="entity-text-muted">Sin email registrado</span>}

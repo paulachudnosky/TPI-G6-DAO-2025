@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { getEspecialidades } from '../../especialidad/services/especialidadService';
 import '../styles/medico.css';
 
 const MedicoForm = ({ initialData, onSubmit }) => {
@@ -6,8 +7,16 @@ const MedicoForm = ({ initialData, onSubmit }) => {
         nombre: '',
         apellido: '',
         matricula: '',
-        email: ''
+        email: '',
+        id_especialidad: ''
     });
+
+    const [especialidades, setEspecialidades] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        loadEspecialidades();
+    }, []);
 
     useEffect(() => {
         if (initialData) {
@@ -15,10 +24,23 @@ const MedicoForm = ({ initialData, onSubmit }) => {
                 nombre: initialData.nombre || '',
                 apellido: initialData.apellido || '',
                 matricula: initialData.matricula || '',
-                email: initialData.email || ''
+                email: initialData.email || '',
+                id_especialidad: initialData.id_especialidad || ''
             });
         }
     }, [initialData]);
+
+    const loadEspecialidades = async () => {
+        try {
+            const data = await getEspecialidades();
+            setEspecialidades(data);
+        } catch (error) {
+            console.error('Error al cargar especialidades:', error);
+            alert('Error al cargar las especialidades');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -83,6 +105,31 @@ const MedicoForm = ({ initialData, onSubmit }) => {
                 />
                 <span className="entity-form-help">
                     Ingrese la matrícula profesional del médico
+                </span>
+            </div>
+
+            <div className="entity-form-group">
+                <label htmlFor="id_especialidad" className="entity-form-label required">
+                    Especialidad
+                </label>
+                <select
+                    id="id_especialidad"
+                    name="id_especialidad"
+                    className="entity-form-input"
+                    value={formData.id_especialidad}
+                    onChange={handleChange}
+                    required
+                    disabled={loading}
+                >
+                    <option value="">Seleccione una especialidad...</option>
+                    {especialidades.map(esp => (
+                        <option key={esp.id_especialidad} value={esp.id_especialidad}>
+                            {esp.nombre}
+                        </option>
+                    ))}
+                </select>
+                <span className="entity-form-help">
+                    Seleccione la especialidad médica (obligatorio)
                 </span>
             </div>
 

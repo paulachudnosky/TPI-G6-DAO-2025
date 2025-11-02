@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import especialidadService from '../../services/especialidadService';
+import { getEspecialidad } from '../services/especialidadService';
 
 const EspecialidadView = () => {
     const { id } = useParams();
@@ -11,7 +11,7 @@ const EspecialidadView = () => {
     React.useEffect(() => {
         const fetchEspecialidad = async () => {
             try {
-                const data = await especialidadService.getEspecialidadById(id);
+                const data = await getEspecialidad(id);
                 setEspecialidad(data);
             } catch (err) {
                 setError(err.message);
