@@ -5,7 +5,7 @@
 */
 
 /* Importar estilos base */
-@import '../../styles/entity-base.css';
+@import '../../../styles/entity-base.css';
 
 /* Sobrescribir variables de color para Especialidad */
 :root {
