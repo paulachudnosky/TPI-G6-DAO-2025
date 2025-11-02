@@ -1,0 +1,21 @@
+/* ===================================
+   ESTILOS ESPECÍFICOS - ESPECIALIDAD
+   ===================================
+   Importa los estilos base y sobrescribe variables de color.
+*/
+
+/* Importar estilos base */
+@import '../../styles/entity-base.css';
+
+/* Sobrescribir variables de color para Especialidad */
+:root {
+    /* Color principal: Verde (success) */
+    --entity-primary: #198754;
+    --entity-primary-hover: #157347;
+    --entity-primary-light: #d1e7dd;
+}
+
+/* Estilos adicionales específicos de Especialidad (si los necesitas) */
+.especialidad-custom {
+    /* Agrega estilos personalizados aquí si es necesario */
+}

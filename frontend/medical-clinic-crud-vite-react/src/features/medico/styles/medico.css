@@ -1,0 +1,25 @@
+/* ===================================
+   ESTILOS ESPECÍFICOS - MÉDICO
+   ===================================
+   Importa los estilos base y sobrescribe variables de color.
+*/
+
+/* Importar estilos base */
+@import '../../../styles/entity-base.css';
+
+/* Sobrescribir variables de color para Médico */
+:root {
+    /* Color principal: Azul cyan (info) */
+    --entity-primary: #0dcaf0;
+    --entity-primary-hover: #0ab7d6;
+    --entity-primary-light: #cff4fc;
+}
+
+/* Opcional: Si quieres un azul más oscuro como el del Home (info) usa: */
+/*
+:root {
+    --entity-primary: #0d6efd;
+    --entity-primary-hover: #0b5ed7;
+    --entity-primary-light: #cfe2ff;
+}
+*/
