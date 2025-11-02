@@ -84,6 +84,11 @@ def eliminar_especialidad(id_especialidad):
         cursor = conn.cursor()
         cursor.execute("DELETE FROM Especialidad WHERE id_especialidad = ?", (id_especialidad,))
         conn.commit()
+    except sqlite3.IntegrityError as e:
+        # Error específico de clave foránea
+        if "FOREIGN KEY constraint failed" in str(e):
+            raise ValueError("No se puede eliminar la especialidad porque tiene médicos asignados")
+        raise  # Re-lanzar si es otro tipo de IntegrityError
     except sqlite3.Error as e:
         print(f"Error al eliminar especialidad: {e}")
     finally:

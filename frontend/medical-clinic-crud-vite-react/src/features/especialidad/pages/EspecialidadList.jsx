@@ -32,9 +32,17 @@ const EspecialidadList = () => {
 
         try {
             await deleteEspecialidad(id);
+            alert('✅ Especialidad eliminada exitosamente');
             await load();
         } catch (err) {
-            alert('Error al eliminar especialidad');
+            // Capturar el error específico de restricción de clave foránea
+            const errorMessage = err.response?.data?.error || err.message || 'Error desconocido';
+
+            if (err.response?.status === 409 || errorMessage.includes('médicos asignados')) {
+                alert('⚠️ No se puede eliminar esta especialidad porque tiene médicos asignados. Primero debe reasignar o eliminar los médicos asociados.');
+            } else {
+                alert('❌ Error al eliminar especialidad: ' + errorMessage);
+            }
             console.error(err);
         }
     };

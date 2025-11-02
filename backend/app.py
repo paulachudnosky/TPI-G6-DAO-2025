@@ -58,8 +58,15 @@ def handle_especialidad(id_especialidad):
         return jsonify({"mensaje": "Especialidad actualizada exitosamente"})
 
     elif request.method == 'DELETE':
-        especialidad_dao.eliminar_especialidad(id_especialidad)
-        return jsonify({"mensaje": "Especialidad eliminada exitosamente"})
+        try:
+            especialidad_dao.eliminar_especialidad(id_especialidad)
+            return jsonify({"mensaje": "Especialidad eliminada exitosamente"}), 200
+        except ValueError as e:
+            # Error de validación (ej: FOREIGN KEY)
+            return jsonify({"error": str(e)}), 409  # 409 Conflict
+        except Exception as e:
+            # Otros errores
+            return jsonify({"error": f"Error al eliminar especialidad: {str(e)}"}), 500
 
 # --- RUTAS DE PACIENTES ---
 @app.route('/pacientes', methods=['GET'])
