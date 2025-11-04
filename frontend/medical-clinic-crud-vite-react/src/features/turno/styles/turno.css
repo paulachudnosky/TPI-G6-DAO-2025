@@ -1,0 +1,16 @@
+/* ===================================
+   ESTILOS ESPECÍFICOS - TURNO
+   ===================================
+   Importa los estilos base y sobrescribe variables de color.
+*/
+
+/* Importar estilos base */
+@import '../../styles/entity-base.css';
+
+/* Sobrescribir variables de color para Turno */
+:root {
+    /* Color principal: Azul (primary) */
+    --entity-primary: #0d6efd;
+    --entity-primary-hover: #0b5ed7;
+    --entity-primary-light: #cfe2ff;
+}

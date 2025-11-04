@@ -1,0 +1,16 @@
+/* ===================================
+   ESTILOS ESPECÍFICOS - PACIENTE
+   ===================================
+   Importa los estilos base y sobrescribe variables de color.
+*/
+
+/* Importar estilos base */
+@import '../../styles/entity-base.css';
+
+/* Sobrescribir variables de color para Paciente */
+:root {
+    /* Color principal: Naranja/Amarillo (warning) */
+    --entity-primary: #ffc107;
+    --entity-primary-hover: #e0a800;
+    --entity-primary-light: #fff3cd;
+}
