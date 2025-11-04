@@ -19,9 +19,9 @@ const MedicoCreate = () => {
             await createMedico(data);    // Envía los datos al backend (espera respuesta)
             alert('✅ Médico creado exitosamente');
             navigate('/medico');         // Redirige a la lista de médicos
-        } catch (error) {
-            alert('❌ Error al crear el médico');
-            console.error(error);
+        } catch (err) {
+            const errorMessage = err.response?.data?.error || 'Error al crear el médico. Por favor, intente de nuevo.';
+            alert(`❌ ${errorMessage}`);
         }
     };
 

@@ -2,7 +2,7 @@ import sqlite3
 import datetime
 from models.turno import Turno
 from database import get_db_connection
-from . import tipo_consulta_dao, horario_atencion_dao
+from . import tipo_consulta_dao, medico_dao, horario_atencion_dao
 
 DIAS_SEMANA = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
 
@@ -151,6 +151,31 @@ def obtener_turnos_por_medico(id_medico):
         return turnos
     except sqlite3.Error as e:
         print(f"Error al obtener turnos del médico: {e}")
+        return []
+    finally:
+        if conn:
+            conn.close()
+
+def obtener_turnos_por_dia_y_medico(id_medico, fecha_str):
+    """Obtiene todos los turnos de un médico para un día específico."""
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        # Usamos la función DATE() de SQLite para comparar solo la parte de la fecha
+        cursor.execute(
+            "SELECT * FROM Turno WHERE id_medico = ? AND DATE(fecha_hora_inicio) = ?",
+            (id_medico, fecha_str)
+        )
+        rows = cursor.fetchall()
+        
+        turnos = []
+        for row in rows:
+            turno = Turno(*row) # Desempaqueta la fila en los argumentos del constructor
+            turnos.append(turno.to_dict())
+        return turnos
+    except sqlite3.Error as e:
+        print(f"Error al obtener turnos por día y médico: {e}")
         return []
     finally:
         if conn:

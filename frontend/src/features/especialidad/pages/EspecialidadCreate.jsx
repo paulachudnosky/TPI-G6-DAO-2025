@@ -19,9 +19,9 @@ const EspecialidadCreate = () => {
             await createEspecialidad(data);    // Envía los datos al backend (espera respuesta)
             alert('✅ Especialidad creada exitosamente');
             navigate('/especialidad');         // Redirige a la lista de especialidades
-        } catch (error) {
-            alert('❌ Error al crear la especialidad');
-            console.error(error);
+        } catch (err) {
+            const errorMessage = err.response?.data?.error || 'Error al crear la especialidad. Por favor, intente de nuevo.';
+            alert(`❌ ${errorMessage}`);
         }
     };
 

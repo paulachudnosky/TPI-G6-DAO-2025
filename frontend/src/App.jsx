@@ -3,12 +3,18 @@ import Layout from './components/layout/Layout';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import HistorialClinicoList from './features/historial-clinico/pages/HistorialClinicoList';
-import HorarioAtencionList from './features/horario-atencion/pages/HorarioAtencionList';
+
 import MedicamentoList from './features/medicamento/pages/MedicamentoList';
 import PacienteList from './features/paciente/pages/PacienteList';
 import TipoConsultaList from './features/tipo-consulta/pages/TipoConsultaList';
 import TipoMedicamentoList from './features/tipo-medicamento/pages/TipoMedicamentoList';
 import TurnoList from './features/turno/pages/TurnoList';
+
+// CRUD horarios de atención
+import HorarioAtencionList from './features/horario-atencion/pages/HorarioAtencionList';
+import HorarioAtencionCreate from './features/horario-atencion/pages/HorarioAtencionCreate';
+import HorarioAtencionEdit from './features/horario-atencion/pages/HorarioAtencionEdit';
+  
 
 // CRUD especialidades
 import EspecialidadList from './features/especialidad/pages/EspecialidadList';
@@ -35,7 +41,13 @@ function App() {
           <Route path="/especialidad/:id" element={<EspecialidadView />} />
 
           <Route path="/historial-clinico" element={<HistorialClinicoList />} />
+
+          {/* Rutas CRUD Horario de Atención */}
+
           <Route path="/horario-atencion" element={<HorarioAtencionList />} />
+          <Route path="/horario-atencion/nuevo" element={<HorarioAtencionCreate />} />
+          <Route path="/horario-atencion/:id/editar" element={<HorarioAtencionEdit />} />
+
           <Route path="/medicamento" element={<MedicamentoList />} />
           {/* Rutas CRUD Médico */}
           <Route path="/medico" element={<MedicoList />} />

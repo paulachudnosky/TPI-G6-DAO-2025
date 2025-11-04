@@ -1,0 +1,13 @@
+/* ===================================
+   ESTILOS ESPECÍFICOS - HORARIO DE ATENCIÓN
+   ===================================
+   Importa los estilos base y sobrescribe variables de color.
+*/
+
+@import '../../../styles/entity-base.css';
+
+:root {
+    --entity-primary: #198754; /* Verde (success) */
+    --entity-primary-hover: #157347;
+    --entity-primary-light: #d1e7dd;
+}
