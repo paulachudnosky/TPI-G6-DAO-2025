@@ -15,8 +15,11 @@ const HorarioAtencionCreate = () => {
             // Lo fusionamos aquí para asegurar que se envíe al backend,
             // ya que es requerido para la validación.
             await createHorarioAtencion({ ...formData, id_medico: idMedico });
-            alert('✅ Horario creado exitosamente');
-            navigate('/horario-atencion', { state: { idMedico } }); // Vuelve a la lista con el médico seleccionado
+            alert('✅ Horario creado exitosamente.');
+            // Volvemos a la lista, pasando el idMedico y una señal para refrescar.
+            navigate('/horario-atencion', { 
+                state: { idMedico, refresh: true } 
+            });
         } catch (err) {
             const errorMessage = err.response?.data?.error || 'Error al crear el horario. Por favor, intente de nuevo.';
             alert(`❌ ${errorMessage}`);

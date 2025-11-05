@@ -39,8 +39,11 @@ const HorarioAtencionEdit = () => {
             // ya que es requerido para la validación.
             const dataToSend = { ...formData, id_medico: idMedico };
             await updateHorarioAtencion(id, dataToSend);
-            alert('✅ Horario actualizado exitosamente');
-            navigate('/horario-atencion', { state: { idMedico } }); // Vuelve a la lista con el médico seleccionado
+            alert('✅ Horario actualizado exitosamente.');
+            // Volvemos a la lista, pasando el idMedico y una señal para refrescar.
+            navigate('/horario-atencion', { 
+                state: { idMedico, refresh: true } 
+            });
         } catch (err) {
             const errorMessage = err.response?.data?.error || 'Error al actualizar el horario. Por favor, intente de nuevo.';
             alert(`❌ ${errorMessage}`);

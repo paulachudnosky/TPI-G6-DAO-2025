@@ -82,7 +82,8 @@ def crear_tablas():
         dia_semana TEXT NOT NULL, -- "Lunes", "Martes", etc.
         hora_inicio TEXT NOT NULL, -- "HH:MM"
         hora_fin TEXT NOT NULL,
-        FOREIGN KEY (id_medico) REFERENCES Medico (id_medico)
+        FOREIGN KEY (id_medico) REFERENCES Medico (id_medico) ON DELETE CASCADE,
+        CHECK (hora_inicio < hora_fin)
     )''')
     
     # Tipo consulta 

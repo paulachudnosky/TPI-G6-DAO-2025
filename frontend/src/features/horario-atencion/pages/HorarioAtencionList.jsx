@@ -21,12 +21,13 @@ const HorarioAtencionList = () => {
             try {
                 const data = await getMedicos();
                 setMedicos(data);
-                // Si volvemos de otra página con un idMedico, lo seleccionamos
                 const medicoIdFromState = location.state?.idMedico;
                 if (medicoIdFromState) {
                     setIdMedico(medicoIdFromState);
-                    // ¡CORRECCIÓN CLAVE! Si venimos de otra página, cargamos los horarios automáticamente.
-                    fetchHorarios(medicoIdFromState);
+                    // ¡CORRECCIÓN CLAVE! Cargamos automáticamente SOLO si venimos de guardar.
+                    if (location.state?.refresh) {
+                        fetchHorarios(medicoIdFromState);
+                    }
                 }
             } catch (err) {
                 handleApiError(err, 'Error al cargar la lista de médicos.');
@@ -81,8 +82,8 @@ const HorarioAtencionList = () => {
         <div className="entity-container">
             <PageHeader title="Horarios de Atención" />
 
-            <div className="entity-header d-flex justify-content-between align-items-end"> {/* Alinea los elementos al final */}
-                <div className="d-flex flex-column"> {/* Hace que la etiqueta y el select se apilen */}
+            <div className="entity-header d-flex justify-content-between align-items-end">
+                <div className="d-flex flex-column"> 
                     <label className="entity-form-label">Profesional</label>
                     <select
                         className="entity-form-input"
@@ -90,7 +91,6 @@ const HorarioAtencionList = () => {
                         onChange={(e) => {
                             setIdMedico(e.target.value);
                             setError(null);
-                            setSearchPerformed(false); // Resetear al cambiar de médico
                         }}
                         style={{ maxWidth: 240 }}
                     >
@@ -103,7 +103,7 @@ const HorarioAtencionList = () => {
                     </select>
                 </div>
                 <div className="d-flex gap-2"> {/* Quitamos align-items-end, ya que el padre lo maneja */}
-                    <button className="btn-entity-primary" onClick={fetchHorarios} disabled={!idMedico || loading}>
+                    <button className="btn-entity-primary" onClick={() => fetchHorarios()} disabled={!idMedico || loading}>
                         {loading ? 'Buscando...' : '🔍 Buscar'}
                     </button>
                     {idMedico && (
