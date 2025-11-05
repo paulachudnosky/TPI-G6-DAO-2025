@@ -16,18 +16,18 @@ const TurnoTable = ({ turnos, onEdit, onDelete }) => {
                 </thead>
                 <tbody>
                     {turnos.map(turno => (
-                        <tr key={turno.id}>
-                            <td>{turno.id}</td>
+                        <tr key={turno.id_turno}>
+                            <td>{turno.id_turno}</td>
                             <td>{turno.paciente}</td>
                             <td>{turno.medico}</td>
                             <td>{turno.fecha}</td>
                             <td>{turno.hora}</td>
                             <td className="text-end">
                                 {onEdit && (
-                                    <button className="btn btn-sm btn-primary me-2" onClick={() => onEdit(turno.id)}>Editar</button>
+                                    <button className="btn btn-sm btn-primary me-2" onClick={() => onEdit(turno.id_turno)}>Editar</button>
                                 )}
                                 {onDelete && (
-                                    <button className="btn btn-sm btn-outline-danger" onClick={() => onDelete(turno.id)}>Eliminar</button>
+                                    <button className="btn btn-sm btn-outline-danger" onClick={() => onDelete(turno.id_turno)}>Eliminar</button>
                                 )}
                             </td>
                         </tr>

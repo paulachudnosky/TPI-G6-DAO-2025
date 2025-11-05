@@ -20,7 +20,7 @@ const Sidebar = () => {
                 <Item to="/turno">Turnos</Item>
                 <Item to="/especialidad">Especialidades</Item>
                 <Item to="/medico">Médicos</Item>
-                <Item to="/paciente">Pacientes</Item>
+                <Item to="/pacientes">Pacientes</Item>
                 <Item to="/medicamento">Medicamentos</Item>
                 <Item to="/tipo-consulta">Tipos de Consulta</Item>
                 <Item to="/tipo-medicamento">Tipos de Medicamento</Item>

@@ -1,38 +1,35 @@
 import apiClient from '../../../services/apiClient';
 
-const PACIENTE_API_URL = '/pacientes';
+// URL base para el recurso de pacientes.
+// ¡IMPORTANTE! No debe tener una barra al final ("/") para que coincida con el backend.
+const URL_RESOURCE = '/pacientes';
 
 export const getPacientes = async () => {
-    const response = await apiClient.get(PACIENTE_API_URL);
+    // Llama a GET /pacientes
+    const response = await apiClient.get(URL_RESOURCE);
     return response.data;
 };
 
 export const getPacienteById = async (id) => {
-    const response = await apiClient.get(`${PACIENTE_API_URL}/${id}`);
+    // Llama a GET /pacientes/{id}
+    const response = await apiClient.get(`${URL_RESOURCE}/${id}`);
     return response.data;
 };
 
 export const createPaciente = async (pacienteData) => {
-    const response = await apiClient.post(PACIENTE_API_URL, pacienteData);
+    // Llama a POST /pacientes
+    const response = await apiClient.post(URL_RESOURCE, pacienteData);
     return response.data;
 };
 
 export const updatePaciente = async (id, pacienteData) => {
-    const response = await apiClient.put(`${PACIENTE_API_URL}/${id}`, pacienteData);
+    // Llama a PUT /pacientes/{id}
+    const response = await apiClient.put(`${URL_RESOURCE}/${id}`, pacienteData);
     return response.data;
 };
 
 export const deletePaciente = async (id) => {
-    await apiClient.delete(`${PACIENTE_API_URL}/${id}`);
+    // Llama a DELETE /pacientes/{id}
+    const response = await apiClient.delete(`${URL_RESOURCE}/${id}`);
+    return response.data;
 };
-
-// Export default para consumir como servicio
-const pacienteService = {
-    getAll: getPacientes,
-    getById: getPacienteById,
-    create: createPaciente,
-    update: updatePaciente,
-    remove: deletePaciente,
-};
-
-export default pacienteService;

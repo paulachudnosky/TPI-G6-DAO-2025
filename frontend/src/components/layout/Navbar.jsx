@@ -14,7 +14,7 @@ const Navbar = () => {
                         <li className="nav-item"><Link className="nav-link" to="/turno">Turnos</Link></li>
                         <li className="nav-item"><Link className="nav-link" to="/especialidad">Especialidades</Link></li>
                         <li className="nav-item"><Link className="nav-link" to="/medico">Médicos</Link></li>
-                        <li className="nav-item"><Link className="nav-link" to="/paciente">Pacientes</Link></li>
+                        <li className="nav-item"><Link className="nav-link" to="/pacientes">Pacientes</Link></li>
                         <li className="nav-item"><Link className="nav-link" to="/medicamento">Medicamentos</Link></li>
                         <li className="nav-item"><Link className="nav-link" to="/tipo-consulta">Tipos de Consulta</Link></li>
                         <li className="nav-item"><Link className="nav-link" to="/tipo-medicamento">Tipos de Medicamento</Link></li>

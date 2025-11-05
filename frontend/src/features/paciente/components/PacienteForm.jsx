@@ -1,63 +1,115 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import pacienteService from '../../services/pacienteService';
 
-const PacienteForm = ({ pacienteId }) => {
-    const [nombre, setNombre] = useState('');
-    const [apellido, setApellido] = useState('');
-    const [dni, setDni] = useState('');
-    const [telefono, setTelefono] = useState('');
-    const [direccion, setDireccion] = useState('');
-    const navigate = useNavigate();
+const PacienteForm = ({ initialData, onSubmit }) => {
+    const [formData, setFormData] = useState({
+        nombre: '',
+        apellido: '',
+        dni: '',
+        fecha_nacimiento: '',
+        email: '',
+        telefono: ''
+    });
 
     useEffect(() => {
-        if (pacienteId) {
-            const fetchPaciente = async () => {
-                const paciente = await pacienteService.getPacienteById(pacienteId);
-                setNombre(paciente.nombre);
-                setApellido(paciente.apellido);
-                setDni(paciente.dni);
-                setTelefono(paciente.telefono);
-                setDireccion(paciente.direccion);
-            };
-            fetchPaciente();
+        if (initialData) {
+            setFormData({
+                nombre: initialData.nombre || '',
+                apellido: initialData.apellido || '',
+                dni: initialData.dni || '',
+                // Formatear la fecha para el input type="date"
+                fecha_nacimiento: initialData.fecha_nacimiento ? initialData.fecha_nacimiento.split('T')[0] : '',
+                email: initialData.email || '',
+                telefono: initialData.telefono || ''
+            });
         }
-    }, [pacienteId]);
+    }, [initialData]);
 
-    const handleSubmit = async (e) => {
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleSubmit = (e) => {
         e.preventDefault();
-        const pacienteData = { nombre, apellido, dni, telefono, direccion };
-        if (pacienteId) {
-            await pacienteService.updatePaciente(pacienteId, pacienteData);
-        } else {
-            await pacienteService.createPaciente(pacienteData);
+
+        // --- VALIDACIONES DEL LADO DEL CLIENTE ---
+        const { dni, fecha_nacimiento, telefono } = formData;
+
+        // 1. Validación de DNI (numérico, 7 u 8 dígitos)
+        const dniRegex = /^\d{7,8}$/;
+        if (!dniRegex.test(dni)) {
+            alert('❌ El DNI debe ser un número de 7 u 8 dígitos.');
+            return; // Detiene el envío del formulario
         }
-        navigate('/pacientes');
+
+        // 2. Validación de Teléfono (opcional, pero si existe, no debe contener letras)
+        const telefonoRegex = /^[0-9+\-()\s]*$/;
+        if (telefono && !telefonoRegex.test(telefono)) {
+            alert('❌ El teléfono solo puede contener números y los símbolos +, -, ( ).');
+            return; // Detiene el envío del formulario
+        }
+
+        // 3. Validación de Fecha de Nacimiento
+        if (fecha_nacimiento) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Ignorar la hora para la comparación
+
+            const minDate = new Date();
+            minDate.setFullYear(minDate.getFullYear() - 120);
+            minDate.setHours(0, 0, 0, 0);
+
+            // El valor del input 'date' es 'YYYY-MM-DD'. Para evitar problemas de zona horaria,
+            // creamos la fecha de esta manera.
+            const parts = fecha_nacimiento.split('-');
+            const selectedDate = new Date(parts[0], parts[1] - 1, parts[2]);
+
+            if (selectedDate > today) {
+                alert('❌ La fecha de nacimiento no puede ser una fecha futura.');
+                return; // Detiene el envío del formulario
+            }
+            if (selectedDate < minDate) {
+                alert('❌ La fecha de nacimiento no puede ser de hace más de 120 años.');
+                return; // Detiene el envío del formulario
+            }
+        }
+
+        onSubmit(formData);
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label>Nombre:</label>
-                <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+        <form className="entity-form" onSubmit={handleSubmit}>
+            <div className="entity-form-group">
+                <label htmlFor="nombre" className="entity-form-label required">Nombre</label>
+                <input type="text" id="nombre" name="nombre" className="entity-form-input" value={formData.nombre} onChange={handleChange} required />
             </div>
-            <div>
-                <label>Apellido:</label>
-                <input type="text" value={apellido} onChange={(e) => setApellido(e.target.value)} required />
+            <div className="entity-form-group">
+                <label htmlFor="apellido" className="entity-form-label required">Apellido</label>
+                <input type="text" id="apellido" name="apellido" className="entity-form-input" value={formData.apellido} onChange={handleChange} required />
             </div>
-            <div>
-                <label>DNI:</label>
-                <input type="text" value={dni} onChange={(e) => setDni(e.target.value)} required />
+            <div className="entity-form-group">
+                <label htmlFor="dni" className="entity-form-label required">DNI</label>
+                <input type="text" id="dni" name="dni" className="entity-form-input" value={formData.dni} onChange={handleChange} required />
             </div>
-            <div>
-                <label>Teléfono:</label>
-                <input type="text" value={telefono} onChange={(e) => setTelefono(e.target.value)} required />
+            <div className="entity-form-group">
+                <label htmlFor="fecha_nacimiento" className="entity-form-label required">Fecha de Nacimiento</label>
+                <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" className="entity-form-input" value={formData.fecha_nacimiento} onChange={handleChange} required />
             </div>
-            <div>
-                <label>Dirección:</label>
-                <input type="text" value={direccion} onChange={(e) => setDireccion(e.target.value)} required />
+            <div className="entity-form-group">
+                <label htmlFor="email" className="entity-form-label">Email</label>
+                <input type="email" id="email" name="email" className="entity-form-input" value={formData.email} onChange={handleChange} />
             </div>
-            <button type="submit">{pacienteId ? 'Actualizar' : 'Crear'} Paciente</button>
+            <div className="entity-form-group">
+                <label htmlFor="telefono" className="entity-form-label">Teléfono</label>
+                <input type="tel" id="telefono" name="telefono" className="entity-form-input" value={formData.telefono} onChange={handleChange} />
+            </div>
+            <div className="entity-form-actions">
+                <button type="submit" className="btn-entity-primary">
+                    💾 Guardar Paciente
+                </button>
+            </div>
         </form>
     );
 };
