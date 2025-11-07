@@ -49,21 +49,7 @@ def poblar_base_de_datos():
                     "INSERT INTO Paciente (nombre, apellido, dni, fecha_nacimiento, email, telefono) VALUES (?, ?, ?, ?, ?, ?)",
                     paciente
                 )
-                id_paciente_creado = cursor.lastrowid
-                
-                # Insertar su historial clínico asociado (relación 1-a-1)
-                cursor.execute(
-                    """INSERT INTO HistorialClinico 
-                       (id_paciente, fecha_creacion, fecha_actualizacion, estado) 
-                       VALUES (?, ?, ?, ?)""",
-                    (id_paciente_creado, fecha_hoy, fecha_hoy, "Activo")
-                )
 
-            # Actualizar historiales con datos específicos
-            cursor.execute("UPDATE HistorialClinico SET grupo_sanguineo = 'A+' WHERE id_paciente = 1")
-            cursor.execute("UPDATE HistorialClinico SET grupo_sanguineo = 'O-' WHERE id_paciente = 2")
-            cursor.execute("UPDATE HistorialClinico SET grupo_sanguineo = 'B+' WHERE id_paciente = 3")
-            cursor.execute("UPDATE HistorialClinico SET grupo_sanguineo = 'AB+' WHERE id_paciente = 4")
         else:
             print("Pacientes ya existentes, omitiendo poblamiento.")
 
@@ -109,15 +95,23 @@ def poblar_base_de_datos():
             # (id_paciente, id_medico, id_especialidad, id_tipo_consulta, fecha_hora_inicio, fecha_hora_fin, estado)
             turnos_ejemplo = [
                 # Turno VÁLIDO para Dra. García (ID 1) el próximo Lunes a las 10:00 (Tipo Consulta 2 = 15 min)
-                # (Asumimos que el 2025-11-03 es Lunes)
                 (1, 1, 1, 2, '2025-11-03 10:00:00', '2025-11-03 10:15:00', 'Programado'),
                 
                 # Turno VÁLIDO para Dra. García (ID 1) el mismo Lunes a las 10:30 (Tipo Consulta 1 = 30 min)
                 (2, 1, 1, 1, '2025-11-03 10:30:00', '2025-11-03 11:00:00', 'Programado'),
                 
                 # Turno VÁLIDO para Dr. Lopez (ID 2) el próximo Martes a las 15:00 (Tipo Consulta 2 = 15 min)
-                # (Asumimos que el 2025-11-04 es Martes)
-                (3, 2, 4, 2, '2025-11-04 15:00:00', '2025-11-04 15:15:00', 'Programado')
+                (3, 4, 4, 2, '2025-11-04 15:00:00', '2025-11-04 15:15:00', 'Programado'), # Dr. Sanchez (Trauma)
+
+                # --- Turnos adicionales para más consultas ---
+                (4, 3, 3, 1, '2025-11-07 09:00:00', '2025-11-07 09:30:00', 'Realizado'), # Paciente 4, Dra. Martinez (Pedia)
+                (1, 1, 1, 2, '2024-10-15 11:00:00', '2024-10-15 11:15:00', 'Realizado'), # Paciente 1, control pasado
+                (1, 2, 2, 1, '2025-05-20 14:00:00', '2025-05-20 14:30:00', 'Realizado'), # Paciente 1, con Dr. Lopez (Derma)
+                (3, 4, 4, 2, '2025-11-18 15:00:00', '2025-11-18 15:15:00', 'Programado'), # Paciente 3, control de rodilla
+                (2, 2, 2, 2, '2024-09-01 16:00:00', '2024-09-01 16:15:00', 'Realizado'), # Paciente 2, control pasado derma
+                (1, 1, 1, 2, '2023-11-01 09:30:00', '2023-11-01 09:45:00', 'Realizado'), # Paciente 1, consulta muy antigua
+                (4, 3, 3, 2, '2026-01-10 10:00:00', '2026-01-10 10:15:00', 'Programado') # Paciente 4, futuro control pedia
+
             ]
             cursor.executemany(
                 """INSERT INTO Turno 
@@ -125,6 +119,35 @@ def poblar_base_de_datos():
                    VALUES (?, ?, ?, ?, ?, ?, ?)""",
                 turnos_ejemplo
             )
+
+        # --- 9. Poblar Consultas de Ejemplo ---
+        cursor.execute("SELECT COUNT(*) FROM Consulta")
+        if cursor.fetchone()[0] == 0:
+            print("Poblando consultas...")
+            consultas_ejemplo = [
+                # Consulta para el Turno 1 (Paciente Juan Perez)
+                (1, 'Control anual cardiológico', 'Paciente refiere buen estado general. Se solicita electrocardiograma de control. Presión arterial 120/80. Sin soplos audibles. Próximo control en 1 año.'),
+                # Consulta para el Turno 2 (Paciente Maria Gomez)
+                (2, 'Revisión de lunar', 'Se observa nevo melanocítico en espalda, de características benignas. Se recomienda control en 6 meses y uso de protector solar.'),
+                # Consulta para el Turno 3 (Paciente Lucas Torres)
+                (3, 'Dolor de rodilla post-fútbol', 'Paciente con gonalgia en rodilla derecha tras actividad deportiva. Se indica reposo, hielo y se receta antiinflamatorio. Se solicita radiografía para descartar lesiones óseas.'),
+                # Consulta para el Turno 4 (Paciente Sofia Diaz)
+                (4, 'Control pediátrico general', 'Niña presenta buen desarrollo acorde a su edad. Calendario de vacunación completo. Se refuerzan pautas de alimentación saludable.'),
+                # Consulta para el Turno 5 (Paciente Juan Perez)
+                (5, 'Control cardiológico pasado', 'Resultados de ECG normales. Paciente asintomático. Se mantiene medicación actual.'),
+                # Consulta para el Turno 6 (Paciente Juan Perez)
+                (6, 'Consulta por erupción cutánea', 'Se diagnostica dermatitis de contacto en manos. Se receta crema con corticoides y se recomienda evitar alérgeno sospechoso (detergente).'),
+                # Consulta para el Turno 7 (Paciente Lucas Torres) - Aún no tiene consulta, es un turno futuro.
+                # Consulta para el Turno 8 (Paciente Maria Gomez)
+                (8, 'Control de acné', 'Evolución favorable con tratamiento tópico. Se ajusta dosis y se programa nuevo control en 3 meses.'),
+                # Consulta para el Turno 9 (Paciente Juan Perez)
+                (9, 'Consulta por resfrío común', 'Cuadro viral autolimitado. Se indican medidas de soporte: reposo e hidratación. Sin complicaciones.'),
+                # Consulta para el Turno 10 (Paciente Sofia Diaz) - Aún no tiene consulta, es un turno futuro.
+                # Dos consultas adicionales para el paciente 1, para tener más historial
+                (1, 'Chequeo de rutina', 'Paciente se presenta para chequeo general. Todo en orden.'),
+                (5, 'Seguimiento de presión', 'La presión arterial se mantiene estable. Continuar con el mismo tratamiento.')
+            ]
+            cursor.executemany("INSERT INTO Consulta (id_turno, motivo_consulta, observaciones) VALUES (?, ?, ?)", consultas_ejemplo)
 
         # --- COMMIT FINAL ---
         conn.commit()
@@ -140,4 +163,3 @@ def poblar_base_de_datos():
 
 if __name__ == '__main__':
     poblar_base_de_datos()
-

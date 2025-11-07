@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
-import HistorialClinicoList from './features/historial-clinico/pages/HistorialClinicoList';
 
 import MedicamentoList from './features/medicamento/pages/MedicamentoList';
 // CRUD pacientes
@@ -10,6 +9,9 @@ import PacienteList from './features/paciente/pages/PacienteList';
 import PacienteCreate from './features/paciente/pages/PacienteCreate';
 import PacienteEdit from './features/paciente/pages/PacienteEdit';
 import PacienteView from './features/paciente/pages/PacienteView';
+
+import HistorialClinicoList from './features/historial-clinico/pages/HistorialClinicoList';
+import ConsultaView from './features/consulta/pages/ConsultaView';
 
 
 import TipoConsultaList from './features/tipo-consulta/pages/TipoConsultaList';
@@ -46,7 +48,10 @@ function App() {
           <Route path="/especialidad/:id/editar" element={<EspecialidadEdit />} />
           <Route path="/especialidad/:id" element={<EspecialidadView />} />
 
+
+          {/* Rutas Historial Clinico */}
           <Route path="/historial-clinico" element={<HistorialClinicoList />} />
+          <Route path="/consulta/:id" element={<ConsultaView />} />
 
           {/* Rutas CRUD Horario de Atención */}
 

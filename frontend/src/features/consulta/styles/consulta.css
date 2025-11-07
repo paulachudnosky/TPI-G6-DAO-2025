@@ -1,0 +1,29 @@
+/* ===================================
+   ESTILOS ESPECÍFICOS - CONSULTA
+   ===================================
+*/
+
+@import '../../../styles/entity-base.css';
+
+:root {
+    --entity-primary: #d63384; /* Rosa (mismo que Historial Clínico) */
+    --entity-primary-hover: #b02a6e;
+    --entity-primary-light: #f7d6e6;
+}
+
+/* Estilos para las secciones de texto largo en la vista de consulta */
+.consulta-section {
+    margin-top: var(--entity-spacing-lg);
+    padding: var(--entity-spacing-md);
+    background-color: var(--entity-bg-light);
+    border-radius: var(--entity-radius);
+    border: 1px solid var(--entity-border);
+}
+
+.consulta-section-title {
+    margin-top: 0;
+    margin-bottom: var(--entity-spacing-sm);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--entity-primary);
+}

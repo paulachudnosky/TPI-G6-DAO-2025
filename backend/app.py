@@ -9,10 +9,10 @@ from routes.pacientes_routes import pacientes_bp
 from routes.especialidades_routes import especialidades_bp
 from routes.turnos_routes import turnos_bp
 from routes.horarios_routes import horarios_bp
-from routes.historial_clinico_routes import historial_clinico_bp
 from routes.tipoconsulta_routes import tipos_consulta_bp
 from routes.tipomedicamento_routes import tipos_medicamento_bp
 from routes.medicamento_routes import medicamentos_bp
+from routes.consultas_routes import consultas_bp
 
 
 app = Flask(__name__)
@@ -26,10 +26,10 @@ app.register_blueprint(pacientes_bp)
 app.register_blueprint(especialidades_bp)
 app.register_blueprint(turnos_bp)
 app.register_blueprint(horarios_bp)
-app.register_blueprint(historial_clinico_bp)
 app.register_blueprint(tipos_consulta_bp)
 app.register_blueprint(tipos_medicamento_bp)
 app.register_blueprint(medicamentos_bp)
+app.register_blueprint(consultas_bp)
 
 
 if __name__ == '__main__':

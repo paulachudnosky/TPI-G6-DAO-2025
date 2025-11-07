@@ -2,8 +2,6 @@ import sqlite3
 import datetime
 from models.paciente import Paciente
 from database import get_db_connection 
-# Importamos el DAO de historial para la creación en cascada
-from . import historial_clinico_dao 
 
 
 def crear_paciente(nombre, apellido, dni, fecha_nacimiento, email, telefono):
@@ -18,10 +16,6 @@ def crear_paciente(nombre, apellido, dni, fecha_nacimiento, email, telefono):
         )
         # Obtener el ID del paciente recién creado
         id_paciente_creado = cursor.lastrowid
-        
-        # Crear el historial clínico para este paciente
-        # Usamos el DAO de historial para mantener la lógica encapsulada
-        historial_clinico_dao.crear_historial_para_paciente(id_paciente_creado, conn)
         
         conn.commit()
         print(f"Paciente {nombre} {apellido} e historial creados con ID: {id_paciente_creado}")
@@ -106,9 +100,7 @@ def eliminar_paciente(id_paciente):
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        # Primero eliminar el historial (por la FK)
         # NOTA: Si el paciente tiene turnos, la FK de la tabla Turno dará error al eliminar al paciente.
-        cursor.execute("DELETE FROM HistorialClinico WHERE id_paciente = ?", (id_paciente,))
         # Luego eliminar el paciente
         cursor.execute("DELETE FROM Paciente WHERE id_paciente = ?", (id_paciente,))
         conn.commit()

@@ -62,17 +62,7 @@ def crear_tablas():
         FOREIGN KEY (id_especialidad) REFERENCES Especialidad (id_especialidad)
     )''')
     
-    # Historial Clinico (id_paciente es UNIQUE para la relación 1-a-1)
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS HistorialClinico (
-        id_historial INTEGER PRIMARY KEY AUTOINCREMENT,
-        id_paciente INTEGER NOT NULL UNIQUE,
-        fecha_creacion TEXT NOT NULL,
-        fecha_actualizacion TEXT NOT NULL,
-        grupo_sanguineo TEXT,
-        estado TEXT,
-        FOREIGN KEY (id_paciente) REFERENCES Paciente (id_paciente)
-    )''')
+   
     
     # Horario de atención
     cursor.execute('''
@@ -135,11 +125,9 @@ def crear_tablas():
     CREATE TABLE IF NOT EXISTS Consulta (
         id_consulta INTEGER PRIMARY KEY AUTOINCREMENT,
         id_turno INTEGER NOT NULL,
-        id_historial INTEGER NOT NULL,
         motivo_consulta TEXT,
         observaciones TEXT,
-        FOREIGN KEY (id_turno) REFERENCES Turno (id_turno),
-        FOREIGN KEY (id_historial) REFERENCES HistorialClinico (id_historial)
+        FOREIGN KEY (id_turno) REFERENCES Turno (id_turno)
     )''')
     
     # Receta

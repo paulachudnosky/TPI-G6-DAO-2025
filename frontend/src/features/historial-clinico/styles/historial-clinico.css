@@ -1,0 +1,12 @@
+/* ===================================
+   ESTILOS ESPECÍFICOS - HISTORIAL CLÍNICO
+   ===================================
+*/
+
+@import '../../../styles/entity-base.css';
+
+:root {
+    --entity-primary: #d63384; /* Rosa */
+    --entity-primary-hover: #b02a6e;
+    --entity-primary-light: #f7d6e6;
+}
