@@ -1,0 +1,134 @@
+/* Importar estilos base */
+@import '../../../styles/entity-base.css';
+
+/* Sobrescribir variables de color para Estadísticas */
+:root {
+    --entity-primary: #6f42c1; /* Púrpura */
+    --entity-primary-hover: #59369a;
+    --entity-primary-light: #e2d9f3;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.stat-card {
+    background-color: #fff;
+    border: 1px solid var(--entity-border-color);
+    border-radius: var(--entity-border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--entity-shadow-sm);
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-card-title {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--entity-border-color);
+    padding-bottom: 0.75rem;
+    color: var(--entity-primary);
+}
+
+.stat-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.stat-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.stat-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.stat-list-item:last-child {
+    border-bottom: none;
+}
+
+.stat-badge {
+    background-color: var(--entity-primary-light);
+    color: var(--entity-primary);
+    padding: 0.25rem 0.6rem;
+    border-radius: 1rem;
+    font-weight: 600;
+    font-size: 0.9em;
+}
+
+.stat-result {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.stat-big-number {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--entity-primary);
+    display: block;
+}
+
+.report-menu {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: var(--entity-bg-light);
+    border-radius: var(--entity-radius);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.report-menu p {
+    margin: 0;
+    margin-right: 1rem;
+    font-weight: 500;
+}
+
+.btn-report-menu {
+    background-color: #fff;
+    border: 1px solid var(--entity-border);
+    color: var(--entity-text);
+    padding: 0.5rem 1rem;
+    border-radius: var(--entity-radius);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-report-menu.active,
+.btn-report-menu:hover {
+    background-color: var(--entity-primary);
+    color: white;
+    border-color: var(--entity-primary);
+}
+
+.report-content {
+    margin-top: 1.5rem;
+}
+
+.chart-and-legend-container {
+    align-items: center;
+    justify-content: center;
+    margin-top: 1.5rem;
+    /* Este cambio es clave: permite que el contenedor del gráfico se expanda */
+    align-self: center;
+    width: 100%;
+}
+
+.chart-wrapper-large {
+    position: relative;
+    /* Corrección final: Establecer un tamaño fijo grande y usar max-width para hacerlo responsive */
+    height: 450px;
+    width: 450px;
+    max-width: 100%;
+    margin: 0 auto; /* Centrar el gráfico */
+}

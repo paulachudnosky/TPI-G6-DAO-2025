@@ -13,6 +13,7 @@ from routes.tipoconsulta_routes import tipos_consulta_bp
 from routes.tipomedicamento_routes import tipos_medicamento_bp
 from routes.medicamento_routes import medicamentos_bp
 from routes.consultas_routes import consultas_bp
+from routes.estadisticas_routes import estadisticas_bp
 
 
 app = Flask(__name__)
@@ -30,6 +31,7 @@ app.register_blueprint(tipos_consulta_bp)
 app.register_blueprint(tipos_medicamento_bp)
 app.register_blueprint(medicamentos_bp)
 app.register_blueprint(consultas_bp)
+app.register_blueprint(estadisticas_bp)
 
 
 if __name__ == '__main__':

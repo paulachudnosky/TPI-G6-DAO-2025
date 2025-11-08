@@ -36,6 +36,9 @@ import MedicoCreate from './features/medico/pages/MedicoCreate';
 import MedicoEdit from './features/medico/pages/MedicoEdit';
 import MedicoView from './features/medico/pages/MedicoView';
 
+// Estadísticas
+import EstadisticasPage from './features/estadisticas/pages/EstadisticasPage';
+
 function App() {
   return (
     <Router>
@@ -76,6 +79,10 @@ function App() {
           <Route path="/tipo-consulta" element={<TipoConsultaList />} />
           <Route path="/tipo-medicamento" element={<TipoMedicamentoList />} />
           <Route path="/turno" element={<TurnoList />} />
+
+          {/* Ruta de Estadísticas */}
+          <Route path="/estadisticas" element={<EstadisticasPage />} />
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>

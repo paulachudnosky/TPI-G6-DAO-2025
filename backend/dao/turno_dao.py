@@ -132,6 +132,211 @@ def obtener_turnos():
         if conn:
             conn.close()
 
+def obtener_turnos_por_periodo(fecha_inicio, fecha_fin=None, id_medico=None):
+    """
+    Obtiene todos los turnos dentro de un rango de fechas, incluyendo
+    información detallada del paciente, médico y tipo de consulta. 
+    Opcionalmente filtra por un médico específico.
+    Si fecha_fin no se provee, se usa la fecha y hora actual.
+    """
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Corregido: Si fecha_fin es None O una cadena vacía, usar la fecha actual.
+        if not fecha_fin:
+            fecha_fin = datetime.datetime.now().isoformat()
+
+        query = """
+            SELECT 
+                t.id_turno, t.fecha_hora_inicio, t.fecha_hora_fin, t.estado,
+                p.id_paciente, p.nombre AS paciente_nombre, p.apellido AS paciente_apellido,
+                m.id_medico, m.nombre AS medico_nombre, m.apellido AS medico_apellido,
+                tc.id_tipo, tc.nombre AS tipo_consulta_nombre
+            FROM Turno t
+            JOIN Paciente p ON t.id_paciente = p.id_paciente
+            JOIN Medico m ON t.id_medico = m.id_medico
+            JOIN TipoConsulta tc ON t.id_tipo_consulta = tc.id_tipo
+            WHERE t.fecha_hora_inicio BETWEEN ? AND ?
+        """
+        params = [fecha_inicio, fecha_fin]
+
+        if id_medico:
+            query += " AND t.id_medico = ?"
+            params.append(id_medico)
+
+        query += " ORDER BY t.fecha_hora_inicio ASC"
+        cursor.execute(query, tuple(params))
+        
+        rows = cursor.fetchall()
+        turnos_detallados = []
+        for row in rows:
+            turno = {
+                "id_turno": row[0],
+                "fecha_hora_inicio": row[1],
+                "fecha_hora_fin": row[2],
+                "estado": row[3],
+                "paciente": {"id_paciente": row[4], "nombre": row[5], "apellido": row[6]},
+                "medico": {"id_medico": row[7], "nombre": row[8], "apellido": row[9]},
+                "tipo_consulta": {"id_tipo": row[10], "nombre": row[11]}
+            }
+            turnos_detallados.append(turno)
+        return turnos_detallados
+
+    except sqlite3.Error as e:
+        print(f"Error al obtener turnos por período: {e}")
+        return []
+    finally:
+        if conn:
+            conn.close()
+
+def contar_pacientes_atendidos_por_periodo(fecha_inicio, id_especialidad, fecha_fin=None):
+    """
+    Cuenta la cantidad de pacientes únicos atendidos en un período de tiempo para una especialidad específica.
+    Un paciente es "atendido" si su turno tiene el estado 'Realizado'.
+    - Si fecha_fin no se provee, se usa la fecha y hora actual.
+    - El filtro por id_especialidad es obligatorio.
+    """
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Corregido: Si fecha_fin es None O una cadena vacía, usar la fecha actual.
+        if not fecha_fin:
+            fecha_fin = datetime.datetime.now().isoformat()
+
+        # Usamos COUNT(DISTINCT t.id_paciente) para contar pacientes únicos
+        query = """
+            SELECT COUNT(DISTINCT t.id_paciente) 
+            FROM Turno t 
+            JOIN Medico m ON t.id_medico = m.id_medico
+            WHERE t.estado = 'Asistido'
+              AND t.fecha_hora_inicio BETWEEN ? AND ?
+              AND m.id_especialidad = ?
+        """
+        # Corregido: Construir los parámetros DESPUÉS de asignar el valor por defecto a fecha_fin
+        params = (fecha_inicio, fecha_fin, id_especialidad)
+        cursor.execute(query, tuple(params))
+        
+        # fetchone() devolverá una tupla, ej: (25,)
+        count = cursor.fetchone()[0]
+        
+        return {"pacientes_atendidos": count}
+
+    except sqlite3.Error as e:
+        print(f"Error al contar pacientes atendidos: {e}")
+        return {"error": str(e)}
+    finally:
+        if conn:
+            conn.close()
+
+def contar_turnos_por_estado(fecha_inicio=None, fecha_fin=None):
+    """
+    Cuenta la cantidad de turnos 'Realizado' (asistidos), 'Cancelado' (no asistidos),
+    y los que quedaron 'Programado' en el pasado (ausentes).
+    - Opcionalmente filtra por un rango de fechas (fecha_inicio, fecha_fin).
+    - Si no se proveen fechas, cuenta sobre todos los turnos históricos.
+    """
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Construcción de la cláusula WHERE para el rango de fechas
+        where_clause = ""
+        params = []
+        if fecha_inicio and fecha_fin:
+            where_clause = "WHERE fecha_hora_inicio BETWEEN ? AND ?"
+            params = [fecha_inicio, fecha_fin]
+        elif fecha_inicio:
+            where_clause = "WHERE fecha_hora_inicio >= ?"
+            params = [fecha_inicio]
+        elif fecha_fin:
+            where_clause = "WHERE fecha_hora_inicio <= ?"
+            params = [fecha_fin]
+
+        # Consulta para contar por estado
+        query = f"""
+            SELECT estado, COUNT(*) 
+            FROM Turno 
+            {where_clause}
+            GROUP BY estado
+        """
+        cursor.execute(query, tuple(params))
+        rows = cursor.fetchall()
+
+        # Inicializamos contadores y procesamos resultados
+        resultados = {'asistidos': 0, 'no_asistidos_cancelado': 0}
+        for row in rows:
+            estado, cantidad = row
+            if estado == 'Asistido':
+                resultados['asistidos'] = cantidad
+            elif estado == 'No Asistido':
+                resultados['no_asistidos_cancelado'] = cantidad
+
+        # Consulta separada para contar ausentes (no-shows)
+        # Son turnos 'Programado' cuya fecha ya pasó
+        now_str = datetime.datetime.now().isoformat()
+        
+        # Adaptamos el where_clause para la consulta de ausentes
+        # Si hay un where, lo concatenamos con AND, si no, usamos WHERE
+        if where_clause:
+            ausentes_where = f"{where_clause} AND estado = 'Programado' AND fecha_hora_inicio < ?"
+            params.append(now_str)
+        else:
+            ausentes_where = "WHERE estado = 'Programado' AND fecha_hora_inicio < ?"
+            params = [now_str]
+
+        cursor.execute(f"SELECT COUNT(*) FROM Turno {ausentes_where}", tuple(params))
+        resultados['no_asistidos_ausente'] = cursor.fetchone()[0]
+
+        return resultados
+
+    except sqlite3.Error as e:
+        print(f"Error al contar turnos por estado: {e}")
+        return {"error": str(e)}
+    finally:
+        if conn:
+            conn.close()
+
+def contar_turnos_por_especialidad():
+    """
+    Cuenta la cantidad de turnos agrupados por especialidad.
+    Retorna una lista de diccionarios con el nombre de la especialidad y la cantidad.
+    """
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT 
+                e.nombre AS especialidad_nombre,
+                COUNT(t.id_turno) AS cantidad
+            FROM Turno t
+            JOIN Medico m ON t.id_medico = m.id_medico
+            JOIN Especialidad e ON m.id_especialidad = e.id_especialidad
+            GROUP BY e.id_especialidad, e.nombre
+            ORDER BY cantidad DESC
+        """)
+        
+        rows = cursor.fetchall()
+        resultado = []
+        for row in rows:
+            resultado.append({
+                "especialidad_nombre": row[0],
+                "cantidad": row[1]
+            })
+        return resultado
+
+    except sqlite3.Error as e:
+        print(f"Error al contar turnos por especialidad: {e}")
+        return []
+    finally:
+        if conn:
+            conn.close()
+
 def obtener_turnos_por_medico(id_medico):
     """Obtiene todos los turnos de un médico específico."""
     conn = None

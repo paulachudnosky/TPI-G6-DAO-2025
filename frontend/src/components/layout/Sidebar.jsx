@@ -26,6 +26,7 @@ const Sidebar = () => {
                 <Item to="/tipo-medicamento">Tipos de Medicamento</Item>
                 <Item to="/historial-clinico">Historial Clínico</Item>
                 <Item to="/horario-atencion">Horarios de Atención</Item>
+                <Item to="/estadisticas">Estadísticas</Item>
             </div>
         </aside>
     );

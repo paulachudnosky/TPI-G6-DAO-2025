@@ -20,6 +20,7 @@ const Navbar = () => {
                         <li className="nav-item"><Link className="nav-link" to="/tipo-medicamento">Tipos de Medicamento</Link></li>
                         <li className="nav-item"><Link className="nav-link" to="/historial-clinico">Historial Clínico</Link></li>
                         <li className="nav-item"><Link className="nav-link" to="/horario-atencion">Horarios de Atención</Link></li>
+                        <li className="nav-item"><Link className="nav-link" to="/estadisticas">Estadísticas</Link></li>
                     </ul>
                 </div>
             </div>

@@ -1,6 +1,9 @@
 import sqlite3
 import datetime
+import random
 from database import get_db_connection  # Importa la conexión central
+
+estados_turno = ["Programado", "Asistido", "No Asistido"]
 
 def poblar_base_de_datos():
     """
@@ -92,27 +95,32 @@ def poblar_base_de_datos():
         cursor.execute("SELECT COUNT(*) FROM Turno")
         if cursor.fetchone()[0] == 0:
             print("Poblando turnos...")
-            # (id_paciente, id_medico, id_especialidad, id_tipo_consulta, fecha_hora_inicio, fecha_hora_fin, estado)
-            turnos_ejemplo = [
-                # Turno VÁLIDO para Dra. García (ID 1) el próximo Lunes a las 10:00 (Tipo Consulta 2 = 15 min)
-                (1, 1, 1, 2, '2025-11-03 10:00:00', '2025-11-03 10:15:00', 'Programado'),
+            
+            turnos_ejemplo = []
+            for i in range(30):
+                # Datos aleatorios
+                id_paciente = random.randint(1, 4)
+                id_medico = random.randint(1, 4)
+                id_tipo_consulta = random.randint(1, 3)
+                estado = random.choice(estados_turno)
                 
-                # Turno VÁLIDO para Dra. García (ID 1) el mismo Lunes a las 10:30 (Tipo Consulta 1 = 30 min)
-                (2, 1, 1, 1, '2025-11-03 10:30:00', '2025-11-03 11:00:00', 'Programado'),
+                # Fecha aleatoria en los últimos 6 meses o próximos 6 meses
+                dias_aleatorios = random.randint(-180, 180)
+                hora_aleatoria = random.randint(8, 17)
+                minuto_aleatorio = random.choice([0, 15, 30, 45])
+                fecha_inicio = datetime.datetime.now() + datetime.timedelta(days=dias_aleatorios)
+                fecha_inicio = fecha_inicio.replace(hour=hora_aleatoria, minute=minuto_aleatorio, second=0, microsecond=0)
                 
-                # Turno VÁLIDO para Dr. Lopez (ID 2) el próximo Martes a las 15:00 (Tipo Consulta 2 = 15 min)
-                (3, 4, 4, 2, '2025-11-04 15:00:00', '2025-11-04 15:15:00', 'Programado'), # Dr. Sanchez (Trauma)
-
-                # --- Turnos adicionales para más consultas ---
-                (4, 3, 3, 1, '2025-11-07 09:00:00', '2025-11-07 09:30:00', 'Realizado'), # Paciente 4, Dra. Martinez (Pedia)
-                (1, 1, 1, 2, '2024-10-15 11:00:00', '2024-10-15 11:15:00', 'Realizado'), # Paciente 1, control pasado
-                (1, 2, 2, 1, '2025-05-20 14:00:00', '2025-05-20 14:30:00', 'Realizado'), # Paciente 1, con Dr. Lopez (Derma)
-                (3, 4, 4, 2, '2025-11-18 15:00:00', '2025-11-18 15:15:00', 'Programado'), # Paciente 3, control de rodilla
-                (2, 2, 2, 2, '2024-09-01 16:00:00', '2024-09-01 16:15:00', 'Realizado'), # Paciente 2, control pasado derma
-                (1, 1, 1, 2, '2023-11-01 09:30:00', '2023-11-01 09:45:00', 'Realizado'), # Paciente 1, consulta muy antigua
-                (4, 3, 3, 2, '2026-01-10 10:00:00', '2026-01-10 10:15:00', 'Programado') # Paciente 4, futuro control pedia
-
-            ]
+                # Duración basada en tipo de consulta
+                duracion = 15 if id_tipo_consulta == 2 else (20 if id_tipo_consulta == 3 else 30)
+                fecha_fin = fecha_inicio + datetime.timedelta(minutes=duracion)
+                
+                # Obtener especialidad del médico
+                cursor.execute("SELECT id_especialidad FROM Medico WHERE id_medico = ?", (id_medico,))
+                id_especialidad = cursor.fetchone()[0]
+                
+                turnos_ejemplo.append((id_paciente, id_medico, id_especialidad, id_tipo_consulta, fecha_inicio.isoformat(), fecha_fin.isoformat(), estado))
+            
             cursor.executemany(
                 """INSERT INTO Turno 
                    (id_paciente, id_medico, id_especialidad, id_tipo_consulta, fecha_hora_inicio, fecha_hora_fin, estado) 
