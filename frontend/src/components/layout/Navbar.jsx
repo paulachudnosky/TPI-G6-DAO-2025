@@ -5,7 +5,7 @@ import { FaSignOutAlt } from 'react-icons/fa';
 
 const AppNavbar = () => { // Renombrado a AppNavbar para evitar colisión
     return (
-        <Navbar bg="light" expand="lg" className="shadow-sm" sticky="top">
+        <Navbar bg="light" expand="lg" className="shadow-sm">
             <Container fluid>
                 <Navbar.Brand as={Link} to="/">
                     <img src="/logo_hospital.jpg" width="60" alt="Logo" /> 
