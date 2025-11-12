@@ -77,11 +77,11 @@ def poblar_base_de_datos():
 
         # --- 6. Poblar Medicamentos ---
         medicamentos = [
-            (1, 'NAC-1001', 'Paracetamol', 'Analgésico para fiebre y dolor.'),
-            (3, 'NAC-1002', 'Ibuprofeno', 'Antiinflamatorio no esteroideo.'),
-            (2, 'NAC-2001', 'Amoxicilina', 'Antibiótico de amplio espectro.')
+            (1, 'NAC-1001', 'Paracetamol 500mg', 'Analgésico para fiebre y dolor.', 'Comprimido', 'Caja x 20 comprimidos'),
+            (3, 'NAC-1002', 'Ibuprofeno 400mg', 'Antiinflamatorio no esteroideo.', 'Comprimido recubierto', 'Caja x 10 comprimidos'),
+            (2, 'NAC-2001', 'Amoxicilina 500mg', 'Antibiótico de amplio espectro.', 'Cápsula', 'Caja x 16 cápsulas')
         ]
-        cursor.executemany("INSERT OR IGNORE INTO Medicamento (id_tipo_medicamento, codigo_nacional, nombre, descripcion) VALUES (?, ?, ?, ?)", medicamentos)
+        cursor.executemany("INSERT OR IGNORE INTO Medicamento (id_tipo_medicamento, codigo_nacional, nombre, descripcion, forma_farmaceutica, presentacion) VALUES (?, ?, ?, ?, ?, ?)", medicamentos)
 
         # --- 7. Poblar Horarios de Atención ---
         horarios = [
@@ -98,6 +98,28 @@ def poblar_base_de_datos():
         if cursor.fetchone()[0] == 0:
             print("Poblando turnos...")
             
+            # --- Turnos fijos para el día de hoy (para pruebas) ---
+            hoy = datetime.datetime.now()
+            turnos_hoy = [
+                # Paciente 1 (Juan Perez) con Médico 1 (Ana García) a las 10:00
+                (1, 1, 1, 1, hoy.replace(hour=10, minute=0, second=0, microsecond=0).isoformat(), 
+                 hoy.replace(hour=10, minute=30, second=0, microsecond=0).isoformat(), 'Programado'),
+                
+                # Paciente 2 (Maria Gomez) con Médico 2 (Carlos Lopez) a las 11:30
+                (2, 2, 2, 2, hoy.replace(hour=11, minute=30, second=0, microsecond=0).isoformat(), 
+                 hoy.replace(hour=12, minute=0, second=0, microsecond=0).isoformat(), 'Programado'),
+
+                # Paciente 3 (Lucas Torres) con Médico 1 (Ana García) a las 12:00
+                (3, 1, 1, 1, hoy.replace(hour=12, minute=0, second=0, microsecond=0).isoformat(), 
+                 hoy.replace(hour=12, minute=30, second=0, microsecond=0).isoformat(), 'Programado')
+            ]
+            cursor.executemany(
+                """INSERT INTO Turno 
+                   (id_paciente, id_medico, id_especialidad, id_tipo_consulta, fecha_hora_inicio, fecha_hora_fin, estado) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                turnos_hoy
+            )
+
             # DURACIÓN FIJA DE 30 MINUTOS para todos los turnos
             DURACION_FIJA = 30
             

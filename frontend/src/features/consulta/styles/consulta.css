@@ -3,7 +3,7 @@
    ===================================
 */
 
-@import '../../../styles/entity-base.css';
+@import '../../../styles/entity-base.css'; /* Asegurarse que esta línea esté presente y al principio */
 
 :root {
     --entity-primary: #d63384; /* Rosa (mismo que Historial Clínico) */
@@ -26,4 +26,149 @@
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--entity-primary);
+}
+
+/* --- Estilos para botones Neumórficos de acción --- */
+
+.action-button {
+    display: flex;
+    align-items: center;
+    border: none;
+    border-radius: 999px;
+    padding: 6px;
+    cursor: pointer;
+    min-width: 160px;
+    text-decoration: none;
+    box-shadow: 3px 3px 6px #a3b1c6, -3px -3px 6px #ffffff;
+    transition: all 0.2s ease-in-out;
+    margin: 5px;
+}
+
+.action-button:hover {
+    box-shadow: 1px 1px 3px #a3b1c6, -1px -1px 3px #ffffff;
+}
+
+.action-button:active {
+    box-shadow: inset 1px 1px 3px #a3b1c6, inset -1px -1px 3px #ffffff;
+}
+
+.action-button-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: #e0e5ec;
+    box-shadow: inset 3px 3px 6px #a3b1c6, inset -3px -3px 6px #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.action-button-text {
+    flex-grow: 1;
+    text-align: center;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 0 10px;
+    letter-spacing: 0.5px;
+}
+
+.btn-asistido { background: linear-gradient(145deg, #86e3a0, #28a745); }
+.btn-asistido .icon-check { color: #28a745; }
+.btn-no-asistido { background: linear-gradient(145deg, #ff9a4b, #dc3545); }
+.btn-no-asistido .icon-cross { color: #dc3545; }
+
+/* --- Alineación para la celda de acciones --- */
+.actions-cell {
+    display: flex;
+    justify-content: center; /* Centra los botones en la celda */
+    align-items: center;
+    gap: 10px; /* Añade un pequeño espacio entre los botones */
+    min-width: 350px; /* Asegura que haya espacio suficiente para ambos botones */
+}
+
+/* --- Estilos para el badge de estado del turno --- */
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-programado {
+    background-color: var(--entity-info); /* Azul */
+}
+
+.status-no-asistido {
+    background-color: var(--entity-warning); /* Naranja/Amarillo */
+}
+
+/* Centrar los encabezados de la tabla de atención */
+.entity-table thead th {
+    text-align: center;
+}
+
+/* Centrar el contenido de las celdas del cuerpo de la tabla */
+.entity-table tbody td {
+    text-align: center;
+    vertical-align: middle; /* Para alinear verticalmente el contenido */
+}
+
+/* --- Estilos para el Modal de Receta --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content-receta {
+    position: relative; /* Necesario para posicionar el botón de cierre */
+    background-color: white;
+    border-radius: var(--entity-radius);
+    width: 90%;
+    max-width: 750px; /* Hacemos el modal un poco más ancho para la receta */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    animation: modal-fade-in 0.3s ease-out;
+    /* Quitamos el padding para que el componente de receta ocupe todo el espacio */
+}
+
+.modal-close-btn-receta {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #888;
+    cursor: pointer;
+    line-height: 1;
+    z-index: 1010; /* Asegura que esté sobre el contenido de la receta */
+}
+
+.modal-header h3 {
+    margin: 0;
+}
+
+.modal-close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+@keyframes modal-fade-in {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
 }

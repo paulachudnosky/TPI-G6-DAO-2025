@@ -102,6 +102,8 @@ def crear_tablas():
         codigo_nacional TEXT UNIQUE,
         nombre TEXT NOT NULL,
         descripcion TEXT,
+        forma_farmaceutica TEXT, -- Ej: "Comprimido", "Jarabe", "Inyectable"
+        presentacion TEXT, -- Ej: "Caja x 20 comprimidos de 500mg"
         FOREIGN KEY (id_tipo_medicamento) REFERENCES TipoMedicamento (id_tipo_medicamento)
     )''')
     
@@ -139,7 +141,6 @@ def crear_tablas():
         id_consulta INTEGER NOT NULL,
         fecha_emision TEXT NOT NULL,
         vigencia_dias INTEGER,
-        indicaciones TEXT,
         FOREIGN KEY (id_consulta) REFERENCES Consulta (id_consulta)
     )''')
     
@@ -148,6 +149,7 @@ def crear_tablas():
     CREATE TABLE IF NOT EXISTS MedicamentoReceta (
         id_medicamento INTEGER NOT NULL,
         id_receta INTEGER NOT NULL,
+        indicaciones TEXT, -- Instrucciones específicas para este medicamento (posología)
         PRIMARY KEY (id_medicamento, id_receta),
         FOREIGN KEY (id_medicamento) REFERENCES Medicamento (id_medicamento),
         FOREIGN KEY (id_receta) REFERENCES Receta (id_receta)

@@ -18,6 +18,7 @@ const Navbar = () => {
                         <li className="nav-item"><Link className="nav-link" to="/medicamento">Medicamentos</Link></li>
                         <li className="nav-item"><Link className="nav-link" to="/tipo-consulta">Tipos de Consulta</Link></li>
                         <li className="nav-item"><Link className="nav-link" to="/tipo-medicamento">Tipos de Medicamento</Link></li>
+                        <li className="nav-item"><Link className="nav-link" to="/consulta">Consultas</Link></li>
                         <li className="nav-item"><Link className="nav-link" to="/historial-clinico">Historial Clínico</Link></li>
                         <li className="nav-item"><Link className="nav-link" to="/horario-atencion">Horarios de Atención</Link></li>
                         <li className="nav-item"><Link className="nav-link" to="/estadisticas">Estadísticas</Link></li>

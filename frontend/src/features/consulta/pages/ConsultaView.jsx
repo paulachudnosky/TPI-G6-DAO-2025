@@ -1,26 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'; // Importamos useSearchParams
-import { getConsultaById } from '../services/consultaService';
+import { getConsultaById, getRecetaPorConsulta } from '../services/consultaService';
 import '../styles/consulta.css';
 
 const ConsultaView = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [consulta, setConsulta] = useState(null);
+    const [receta, setReceta] = useState(null); // Estado para la receta
     const [loading, setLoading] = useState(true);
+    const [loadingReceta, setLoadingReceta] = useState(true); // Estado de carga para la receta
     const [searchParams] = useSearchParams(); // Hook para manejar parámetros de URL
     const idPacienteFromUrl = searchParams.get('idPaciente'); // Obtenemos el idPaciente de la URL
 
     useEffect(() => {
         const loadData = async () => {
             try {
+                // Cargar datos de la consulta
                 const data = await getConsultaById(id);
                 setConsulta(data);
+
+                // Cargar datos de la receta asociada
+                const dataReceta = await getRecetaPorConsulta(id);
+                setReceta(dataReceta);
+
             } catch (error) {
                 alert('❌ Error al cargar la consulta');
                 navigate(`/historial-clinico${idPacienteFromUrl ? `?idPaciente=${idPacienteFromUrl}` : ''}`); // Volver al historial manteniendo el paciente
             } finally {
                 setLoading(false);
+                setLoadingReceta(false);
             }
         };
         loadData(); // Ejecutamos la carga de datos
@@ -87,6 +96,13 @@ const ConsultaView = () => {
                     {consulta.observaciones || <span className="entity-text-muted">Sin observaciones</span>}
                 </p>
             </div>
+
+            {/* Sección para mostrar la receta */}
+            {loadingReceta ? (
+                <div className="entity-loading">Cargando receta...</div>
+            ) : (
+                <RecetaView receta={receta} />
+            )}
         </div>
     );
 };

@@ -1,0 +1,144 @@
+.recetaContainer {
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    padding: 1.5rem;
+    max-width: 700px;
+    margin: 2rem auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: #333;
+}
+
+/* --- Header --- */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 2px solid #333;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #0056b3;
+}
+
+.headerInfo p {
+    margin: 0;
+    text-align: right;
+    font-size: 0.9rem;
+}
+
+/* --- Patient Info --- */
+.patientInfo {
+    border: 1px solid #ccc;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 4px;
+}
+
+.infoGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.patientInfo p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* --- Medications --- */
+.medications {
+    margin-bottom: 1.5rem;
+}
+
+.rpTitle {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin: 0 0 1rem 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+}
+
+.medicationItem {
+    padding: 0.75rem 0;
+    border-bottom: 1px dashed #ccc;
+}
+
+.medicationItem:last-child {
+    border-bottom: none;
+}
+
+.medName {
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.medDescription {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0.25rem 0;
+}
+
+.medDetails {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.85rem;
+    color: #555;
+    margin: 0.5rem 0;
+}
+
+.medDetails p {
+    margin: 0;
+}
+
+.medQuantity {
+    font-size: 0.9rem;
+    font-style: italic;
+    margin: 0.25rem 0 0 0;
+}
+
+/* --- Doctor Signature --- */
+.doctorSignature {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.doctorSignature p {
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+}
+
+/* --- Footer --- */
+.footer {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.qrSection {
+    text-align: center;
+}
+
+.qrCodePlaceholder {
+    width: 80px;
+    height: 80px;
+    border: 2px solid #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    color: #ccc;
+    margin: 0.5rem auto;
+}
+
+.legalText {
+    font-size: 0.7rem;
+    color: #888;
+    max-width: 200px;
+}

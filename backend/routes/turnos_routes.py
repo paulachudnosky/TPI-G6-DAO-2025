@@ -28,6 +28,19 @@ def get_turnos_por_medico_y_dia(id_medico):
     turnos = turno_dao.obtener_turnos_por_dia_y_medico(id_medico, fecha)
     return jsonify(turnos)
 
+@turnos_bp.route('/dia/<string:fecha>', methods=['GET'])
+def get_turnos_por_dia(fecha):
+    """
+    Obtiene todos los turnos para un día específico, para todos los médicos.
+    Ej: /turnos/dia/2024-11-15
+    """
+    try:
+        turnos = turno_dao.obtener_turnos_por_dia(fecha)
+        return jsonify(turnos)
+    except Exception as e:
+        # Manejo de errores genérico para proteger el servidor
+        return jsonify({"error": f"Error al obtener los turnos del día: {str(e)}"}), 500
+
 @turnos_bp.route('/', methods=['POST'])
 def add_turno():
     """Crea un nuevo turno con validación de disponibilidad."""
