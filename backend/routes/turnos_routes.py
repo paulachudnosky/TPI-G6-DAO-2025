@@ -89,3 +89,92 @@ def delete_turno(id_turno):
         return jsonify({"mensaje": mensaje})
     else:
         return jsonify({"error": mensaje}), 404
+
+
+@turnos_bp.route('/<int:id_turno>', methods=['GET'])
+def get_turno(id_turno):
+    """Obtiene un turno específico por su ID con información completa."""
+    turno = turno_dao.obtener_turno_por_id(id_turno)
+    
+    if turno:
+        return jsonify(turno)
+    else:
+        return jsonify({"error": "Turno no encontrado"}), 404
+
+
+@turnos_bp.route('/dia/<string:fecha>', methods=['GET'])
+def get_turnos_por_dia(fecha):
+    """
+    Obtiene todos los turnos de un día específico (sin filtro de médico).
+    Ej: /turnos/dia/2025-11-12
+    """
+    turnos = turno_dao.obtener_turnos_por_dia(fecha)
+    return jsonify(turnos)
+
+
+@turnos_bp.route('/calendario', methods=['GET'])
+def get_turnos_calendario():
+    """
+    Obtiene un resumen de turnos por día para un mes específico.
+    Ej: /turnos/calendario?anio=2025&mes=11
+    """
+    anio = request.args.get('anio', type=int)
+    mes = request.args.get('mes', type=int)
+    
+    if not anio or not mes:
+        return jsonify({"error": "Los parámetros 'anio' y 'mes' son obligatorios"}), 400
+    
+    if mes < 1 or mes > 12:
+        return jsonify({"error": "El mes debe estar entre 1 y 12"}), 400
+    
+    resumen = turno_dao.obtener_turnos_mes_resumen(anio, mes)
+    return jsonify(resumen)
+
+
+@turnos_bp.route('/<int:id_turno>', methods=['PUT'])
+def update_turno(id_turno):
+    """
+    Actualiza un turno completo con re-validación de disponibilidad.
+    Campos permitidos: id_medico, fecha_hora_inicio, id_tipo_consulta, id_especialidad
+    """
+    data = request.get_json()
+    
+    exito, mensaje = turno_dao.actualizar_turno(id_turno, data)
+    
+    if exito:
+        return jsonify({"mensaje": mensaje})
+    else:
+        return jsonify({"error": mensaje}), 400
+
+
+@turnos_bp.route('/<int:id_turno>/validar-dia-actual', methods=['GET'])
+def validar_turno_dia_actual(id_turno):
+    """
+    Valida si un turno corresponde al día actual.
+    Útil antes de crear una consulta.
+    """
+    es_hoy, fecha_turno = turno_dao.validar_turno_dia_actual(id_turno)
+    
+    if fecha_turno is None:
+        return jsonify({"error": "Turno no encontrado"}), 404
+    
+    return jsonify({
+        "es_dia_actual": es_hoy,
+        "fecha_turno": fecha_turno
+    })
+
+@turnos_bp.route('/turnos/actualizar-vencidos', methods=['POST'])
+def actualizar_vencidos():
+    try:
+        cantidad_actualizada, mensaje = turno_dao.actualizar_turnos_vencidos()
+        return jsonify({'mensaje': mensaje, 'cantidad_actualizada': cantidad_actualizada}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@turnos_bp.route('/turnos/vencidos', methods=['GET'])
+def obtener_vencidos():
+    try:
+        turnos_vencidos = turno_dao.obtener_turnos_vencidos()
+        return jsonify(turnos_vencidos), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

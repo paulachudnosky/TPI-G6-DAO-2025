@@ -2,9 +2,10 @@ import sqlite3
 import datetime
 from models.turno import Turno
 from database import get_db_connection
-from . import tipo_consulta_dao, medico_dao, horario_atencion_dao
+from . import medico_dao, horario_atencion_dao
 
 DIAS_SEMANA = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+DURACION_CONSULTA_MINUTOS = 30  # Duración fija para todas las consultas
 
 def validar_disponibilidad(id_medico, fecha_hora_inicio_dt, fecha_hora_fin_dt):
     """
@@ -61,22 +62,18 @@ def validar_disponibilidad(id_medico, fecha_hora_inicio_dt, fecha_hora_fin_dt):
 def crear_turno(id_paciente, id_medico, id_tipo_consulta, fecha_hora_inicio_str, id_especialidad=None):
     """
     Crea un nuevo turno CON VALIDACIONES.
+    Duración fija de 30 minutos para todas las consultas.
     Retorna (True, "Mensaje de éxito/ID") o (False, "Mensaje de error").
     """
     
-    # 1. Calcular fechas
+    # 1. Calcular fechas con duración fija
     try:
-        tipo_consulta = tipo_consulta_dao.obtener_tipo_consulta_por_id(id_tipo_consulta)
-        if not tipo_consulta:
-            return (False, "El tipo de consulta no existe.")
-        
-        duracion = tipo_consulta['duracion_minutos']
         fecha_hora_inicio_dt = datetime.datetime.fromisoformat(fecha_hora_inicio_str)
-        fecha_hora_fin_dt = fecha_hora_inicio_dt + datetime.timedelta(minutes=duracion)
+        fecha_hora_fin_dt = fecha_hora_inicio_dt + datetime.timedelta(minutes=DURACION_CONSULTA_MINUTOS)
         fecha_hora_fin_str = fecha_hora_fin_dt.isoformat()
         
     except Exception as e:
-        return (False, f"Error en el formato de fecha o tipo de consulta: {e}")
+        return (False, f"Error en el formato de fecha: {e}")
 
     # 2. Validar disponibilidad
     es_valido, mensaje = validar_disponibilidad(id_medico, fecha_hora_inicio_dt, fecha_hora_fin_dt)
@@ -478,6 +475,413 @@ def eliminar_turno(id_turno):
     except sqlite3.Error as e:
         print(f"Error al eliminar turno: {e}")
         return (False, "Error interno al eliminar el turno.")
+    finally:
+        if conn:
+            conn.close()
+
+
+def obtener_turno_por_id(id_turno):
+    """Obtiene un turno por su ID con información completa del paciente, médico y tipo de consulta."""
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT 
+                t.id_turno, t.fecha_hora_inicio, t.fecha_hora_fin, t.estado,
+                t.id_especialidad,
+                p.id_paciente, p.nombre AS paciente_nombre, p.apellido AS paciente_apellido,
+                p.dni AS paciente_dni, p.telefono AS paciente_telefono,
+                m.id_medico, m.nombre AS medico_nombre, m.apellido AS medico_apellido,
+                m.matricula AS medico_matricula,
+                e.id_especialidad AS especialidad_id, e.nombre AS especialidad_nombre,
+                tc.id_tipo AS tipo_consulta_id, tc.nombre AS tipo_consulta_nombre
+            FROM Turno t
+            JOIN Paciente p ON t.id_paciente = p.id_paciente
+            JOIN Medico m ON t.id_medico = m.id_medico
+            LEFT JOIN Especialidad e ON m.id_especialidad = e.id_especialidad
+            LEFT JOIN TipoConsulta tc ON t.id_tipo_consulta = tc.id_tipo
+            WHERE t.id_turno = ?
+        """, (id_turno,))
+        
+        row = cursor.fetchone()
+        if not row:
+            return None
+            
+        turno = {
+            "id_turno": row[0],
+            "fecha_hora_inicio": row[1],
+            "fecha_hora_fin": row[2],
+            "estado": row[3],
+            "id_especialidad": row[4],
+            "paciente": {
+                "id_paciente": row[5],
+                "nombre": row[6],
+                "apellido": row[7],
+                "dni": row[8],
+                "telefono": row[9]
+            },
+            "medico": {
+                "id_medico": row[10],
+                "nombre": row[11],
+                "apellido": row[12],
+                "matricula": row[13]
+            },
+            "especialidad": {
+                "id_especialidad": row[14],
+                "nombre": row[15]
+            } if row[14] else None,
+            "tipo_consulta": {
+                "id_tipo": row[16],
+                "nombre": row[17]
+            } if row[16] else None
+        }
+        return turno
+        
+    except sqlite3.Error as e:
+        print(f"Error al obtener turno por ID: {e}")
+        return None
+    finally:
+        if conn:
+            conn.close()
+
+
+def obtener_turnos_por_dia(fecha):
+    """
+    Obtiene todos los turnos de un día específico (sin filtro de médico).
+    Incluye información completa del paciente, médico y tipo de consulta.
+    
+    Args:
+        fecha: String en formato 'YYYY-MM-DD'
+    
+    Returns:
+        Lista de turnos con información detallada
+    """
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT 
+                t.id_turno, t.fecha_hora_inicio, t.fecha_hora_fin, t.estado,
+                p.id_paciente, p.nombre AS paciente_nombre, p.apellido AS paciente_apellido,
+                p.dni AS paciente_dni,
+                m.id_medico, m.nombre AS medico_nombre, m.apellido AS medico_apellido,
+                e.nombre AS especialidad_nombre,
+                tc.nombre AS tipo_consulta_nombre
+            FROM Turno t
+            JOIN Paciente p ON t.id_paciente = p.id_paciente
+            JOIN Medico m ON t.id_medico = m.id_medico
+            LEFT JOIN Especialidad e ON m.id_especialidad = e.id_especialidad
+            LEFT JOIN TipoConsulta tc ON t.id_tipo_consulta = tc.id_tipo
+            WHERE DATE(t.fecha_hora_inicio) = ?
+            ORDER BY t.fecha_hora_inicio ASC
+        """, (fecha,))
+        
+        rows = cursor.fetchall()
+        turnos = []
+        for row in rows:
+            turno = {
+                "id_turno": row[0],
+                "fecha_hora_inicio": row[1],
+                "fecha_hora_fin": row[2],
+                "estado": row[3],
+                "paciente": {
+                    "id_paciente": row[4],
+                    "nombre": row[5],
+                    "apellido": row[6],
+                    "dni": row[7]
+                },
+                "medico": {
+                    "id_medico": row[8],
+                    "nombre": row[9],
+                    "apellido": row[10]
+                },
+                "especialidad_nombre": row[11],
+                "tipo_consulta_nombre": row[12]
+            }
+            turnos.append(turno)
+        return turnos
+        
+    except sqlite3.Error as e:
+        print(f"Error al obtener turnos por día: {e}")
+        return []
+    finally:
+        if conn:
+            conn.close()
+
+
+def obtener_turnos_mes_resumen(anio, mes):
+    """
+    Obtiene un resumen de turnos agrupados por día para un mes específico.
+    Útil para mostrar en un calendario mensual.
+    
+    Args:
+        anio: Año (int)
+        mes: Mes (int, 1-12)
+    
+    Returns:
+        Lista de diccionarios: [{"fecha": "2025-11-01", "cantidad": 5}, ...]
+    """
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Construir el rango de fechas del mes
+        fecha_inicio = f"{anio}-{mes:02d}-01"
+        
+        # Calcular el último día del mes
+        if mes == 12:
+            fecha_fin = f"{anio + 1}-01-01"
+        else:
+            fecha_fin = f"{anio}-{mes + 1:02d}-01"
+        
+        cursor.execute("""
+            SELECT 
+                DATE(fecha_hora_inicio) as fecha,
+                COUNT(*) as cantidad
+            FROM Turno
+            WHERE fecha_hora_inicio >= ? AND fecha_hora_inicio < ?
+            GROUP BY DATE(fecha_hora_inicio)
+            ORDER BY fecha
+        """, (fecha_inicio, fecha_fin))
+        
+        rows = cursor.fetchall()
+        resumen = []
+        for row in rows:
+            resumen.append({
+                "fecha": row[0],
+                "cantidad": row[1]
+            })
+        return resumen
+        
+    except sqlite3.Error as e:
+        print(f"Error al obtener resumen de turnos del mes: {e}")
+        return []
+    finally:
+        if conn:
+            conn.close()
+
+
+def actualizar_turno(id_turno, datos):
+    """
+    Actualiza un turno existente con re-validación de disponibilidad.
+    
+    Args:
+        id_turno: ID del turno a actualizar
+        datos: Diccionario con los campos a actualizar
+               Campos permitidos: id_medico, fecha_hora_inicio, id_tipo_consulta, id_especialidad
+    
+    Returns:
+        (True, "Mensaje de éxito") o (False, "Mensaje de error")
+    """
+    conn = None
+    try:
+        # 1. Obtener el turno actual
+        turno_actual = obtener_turno_por_id(id_turno)
+        if not turno_actual:
+            return (False, "El turno no existe.")
+        
+        # 2. Preparar los nuevos valores (usar actuales si no se proporciona uno nuevo)
+        id_medico = datos.get('id_medico', turno_actual['medico']['id_medico'])
+        fecha_hora_inicio_str = datos.get('fecha_hora_inicio', turno_actual['fecha_hora_inicio'])
+        id_tipo_consulta = datos.get('id_tipo_consulta', 
+                                     turno_actual['tipo_consulta']['id_tipo'] if turno_actual['tipo_consulta'] else None)
+        id_especialidad = datos.get('id_especialidad', turno_actual['id_especialidad'])
+        
+        # 3. Calcular nueva fecha de fin con duración fija
+        try:
+            fecha_hora_inicio_dt = datetime.datetime.fromisoformat(fecha_hora_inicio_str)
+            fecha_hora_fin_dt = fecha_hora_inicio_dt + datetime.timedelta(minutes=DURACION_CONSULTA_MINUTOS)
+            fecha_hora_fin_str = fecha_hora_fin_dt.isoformat()
+        except Exception as e:
+            return (False, f"Error en el formato de fecha: {e}")
+        
+        # 4. Validar disponibilidad (excluyendo el turno actual de la validación)
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Validar horario de atención
+        dia_semana_num = fecha_hora_inicio_dt.weekday()
+        dia_semana_str = DIAS_SEMANA[dia_semana_num]
+        hora_inicio_str = fecha_hora_inicio_dt.strftime("%H:%M")
+        hora_fin_str = fecha_hora_fin_dt.strftime("%H:%M")
+        
+        horarios_medico = horario_atencion_dao.obtener_horarios_por_medico(id_medico)
+        en_horario = False
+        for horario in horarios_medico:
+            if horario['dia_semana'] == dia_semana_str:
+                if hora_inicio_str >= horario['hora_inicio'] and hora_fin_str <= horario['hora_fin']:
+                    en_horario = True
+                    break
+        
+        if not en_horario:
+            return (False, f"El médico no atiende en el día y hora seleccionados ({dia_semana_str} de {hora_inicio_str} a {hora_fin_str}).")
+        
+        # Validar superposición (excluyendo el turno actual)
+        cursor.execute(
+            """SELECT COUNT(*) FROM Turno 
+               WHERE id_medico = ? AND estado != 'Cancelado' AND id_turno != ?
+               AND fecha_hora_fin > ? AND fecha_hora_inicio < ?""",
+            (id_medico, id_turno, fecha_hora_inicio_dt.isoformat(), fecha_hora_fin_dt.isoformat())
+        )
+        
+        if cursor.fetchone()[0] > 0:
+            return (False, "El médico ya tiene un turno asignado en ese horario.")
+        
+        # 5. Actualizar el turno
+        cursor.execute(
+            """UPDATE Turno 
+               SET id_medico = ?, fecha_hora_inicio = ?, fecha_hora_fin = ?, 
+                   id_tipo_consulta = ?, id_especialidad = ?
+               WHERE id_turno = ?""",
+            (id_medico, fecha_hora_inicio_str, fecha_hora_fin_str, 
+             id_tipo_consulta, id_especialidad, id_turno)
+        )
+        conn.commit()
+        
+        if cursor.rowcount == 0:
+            return (False, "No se pudo actualizar el turno.")
+        
+        return (True, "Turno actualizado exitosamente.")
+        
+    except sqlite3.Error as e:
+        print(f"Error al actualizar turno: {e}")
+        if conn:
+            conn.rollback()
+        return (False, "Error interno al actualizar el turno.")
+    finally:
+        if conn:
+            conn.close()
+
+
+def validar_turno_dia_actual(id_turno):
+    """
+    Valida si un turno corresponde al día actual.
+    
+    Args:
+        id_turno: ID del turno a validar
+    
+    Returns:
+        (True, fecha_turno) si es del día actual, (False, fecha_turno) si no lo es
+    """
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT DATE(fecha_hora_inicio) FROM Turno WHERE id_turno = ?",
+            (id_turno,)
+        )
+        
+        row = cursor.fetchone()
+        if not row:
+            return (False, None)
+        
+        fecha_turno = row[0]
+        fecha_actual = datetime.date.today().isoformat()
+        
+        return (fecha_turno == fecha_actual, fecha_turno)
+        
+    except sqlite3.Error as e:
+        print(f"Error al validar fecha del turno: {e}")
+        return (False, None)
+    finally:
+        if conn:
+            conn.close()
+
+def actualizar_turnos_vencidos():
+    """
+    Actualiza automáticamente los turnos 'Programado' cuya fecha ya pasó
+    al estado 'No Asistido'.
+    
+    Returns:
+        Tupla (cantidad_actualizada, mensaje)
+    """
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Obtener fecha y hora actual
+        ahora = datetime.datetime.now().isoformat()
+        
+        # Actualizar turnos vencidos
+        cursor.execute(
+            """UPDATE Turno 
+               SET estado = 'No Asistido'
+               WHERE estado = 'Programado' 
+               AND fecha_hora_fin < ?""",
+            (ahora,)
+        )
+        
+        cantidad_actualizada = cursor.rowcount
+        conn.commit()
+        
+        if cantidad_actualizada > 0:
+            mensaje = f"{cantidad_actualizada} turno(s) actualizado(s) a 'No Asistido'"
+        else:
+            mensaje = "No hay turnos vencidos para actualizar"
+        
+        return (cantidad_actualizada, mensaje)
+        
+    except sqlite3.Error as e:
+        print(f"Error al actualizar turnos vencidos: {e}")
+        return (0, f"Error: {e}")
+    finally:
+        if conn:
+            conn.close()
+
+
+def obtener_turnos_vencidos():
+    """
+    Obtiene la lista de turnos 'Programado' cuya fecha ya pasó.
+    Útil para verificar antes de actualizar.
+    
+    Returns:
+        Lista de turnos vencidos con información básica
+    """
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Obtener fecha y hora actual
+        ahora = datetime.datetime.now().isoformat()
+        
+        cursor.execute("""
+            SELECT 
+                t.id_turno,
+                t.fecha_hora_inicio,
+                t.fecha_hora_fin,
+                p.nombre || ' ' || p.apellido as paciente,
+                m.nombre || ' ' || m.apellido as medico
+            FROM Turno t
+            JOIN Paciente p ON t.id_paciente = p.id_paciente
+            JOIN Medico m ON t.id_medico = m.id_medico
+            WHERE t.estado = 'Programado' 
+            AND t.fecha_hora_fin < ?
+            ORDER BY t.fecha_hora_inicio DESC
+        """, (ahora,))
+        
+        rows = cursor.fetchall()
+        turnos_vencidos = []
+        
+        for row in rows:
+            turnos_vencidos.append({
+                "id_turno": row[0],
+                "fecha_hora_inicio": row[1],
+                "fecha_hora_fin": row[2],
+                "paciente": row[3],
+                "medico": row[4]
+            })
+        
+        return turnos_vencidos
+        
+    except sqlite3.Error as e:
+        print(f"Error al obtener turnos vencidos: {e}")
+        return []
     finally:
         if conn:
             conn.close()

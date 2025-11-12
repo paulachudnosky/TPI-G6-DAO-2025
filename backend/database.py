@@ -77,6 +77,8 @@ def crear_tablas():
     )''')
     
     # Tipo consulta 
+    # Nota: Aunque la tabla tiene campo duracion_minutos, el sistema usa
+    # una duración FIJA de 30 minutos para todos los turnos (ver turno_dao.py)
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS TipoConsulta (
         id_tipo INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -1,4 +1,5 @@
 import sqlite3
+import datetime
 from models.consulta import Consulta
 from database import get_db_connection
 
@@ -33,19 +34,60 @@ def _mapear_consulta(row):
     }
 
 def crear_consulta(id_turno, motivo_consulta, observaciones):
-    """Crea un nuevo registro de consulta."""
+    """
+    Crea un nuevo registro de consulta.
+    VALIDACIÓN: Solo permite crear consultas para turnos del día actual.
+    """
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
+        # 1. Validar que el turno existe y obtener su fecha
+        cursor.execute(
+            "SELECT DATE(fecha_hora_inicio) FROM Turno WHERE id_turno = ?",
+            (id_turno,)
+        )
+        row = cursor.fetchone()
+        
+        if not row:
+            raise ValueError("El turno especificado no existe.")
+        
+        fecha_turno = row[0]
+        fecha_actual = datetime.date.today().isoformat()
+        
+        # 2. Validar que el turno sea del día actual
+        if fecha_turno != fecha_actual:
+            raise ValueError(f"Solo se pueden crear consultas para turnos del día actual. El turno es del día {fecha_turno}.")
+        
+        # 3. Validar que no exista ya una consulta para este turno
+        cursor.execute(
+            "SELECT COUNT(*) FROM Consulta WHERE id_turno = ?",
+            (id_turno,)
+        )
+        if cursor.fetchone()[0] > 0:
+            raise ValueError("Ya existe una consulta asociada a este turno.")
+        
+        # 4. Crear la consulta
         cursor.execute(
             "INSERT INTO Consulta (id_turno, motivo_consulta, observaciones) VALUES (?, ?, ?)",
             (id_turno, motivo_consulta, observaciones)
         )
         conn.commit()
         nuevo_id = cursor.lastrowid
+        
+        # 5. Actualizar el estado del turno a "Asistido" automáticamente
+        cursor.execute(
+            "UPDATE Turno SET estado = 'Asistido' WHERE id_turno = ?",
+            (id_turno,)
+        )
+        conn.commit()
+        
         return obtener_consulta_por_id(nuevo_id)
     except sqlite3.Error as e:
         print(f"Error al crear consulta: {e}")
+        conn.rollback()
+        raise
+    except ValueError as ve:
+        print(f"Validación fallida: {ve}")
         conn.rollback()
         raise
     finally:

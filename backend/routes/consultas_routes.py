@@ -68,6 +68,9 @@ def add_consulta():
     try:
         nueva_consulta = consultas_dao.crear_consulta(id_turno, motivo_consulta, observaciones)
         return jsonify(nueva_consulta), 201
+    except ValueError as ve:
+        # Errores de validación (turno no del día actual, turno no existe, etc.)
+        return jsonify({"error": str(ve)}), 400
     except Exception as e:
         return jsonify({"error": f"Error interno: {str(e)}"}), 500
 

@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 const Item = ({ to, children }) => {
     const { pathname } = useLocation();
-    const active = pathname === to ? 'active' : '';
+    const active = pathname === to || pathname.startsWith(to + '/') ? 'active' : '';
     return (
         <Link to={to} className={`list-group-item list-group-item-action ${active}`}>{children}</Link>
     );
@@ -17,7 +17,8 @@ const Sidebar = () => {
             </div>
             <div className="list-group list-group-flush">
                 <Item to="/">Home</Item>
-                <Item to="/turno">Turnos</Item>
+                <Item to="/turnos">Turnos</Item>
+                <Item to="/turnos/calendario">📅 Calendario de Turnos</Item>
                 <Item to="/especialidad">Especialidades</Item>
                 <Item to="/medico">Médicos</Item>
                 <Item to="/pacientes">Pacientes</Item>

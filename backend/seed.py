@@ -3,7 +3,7 @@ import datetime
 import random
 from database import get_db_connection  # Importa la conexión central
 
-estados_turno = ["Programado", "Asistido", "No Asistido"]
+estados_turno = ["Asistido", "No Asistido"]
 
 def poblar_base_de_datos():
     """
@@ -58,10 +58,12 @@ def poblar_base_de_datos():
 
 
         # --- 4. Poblar Tipos de Consulta ---
+        # Nota: Todas las consultas ahora tienen duración fija de 30 minutos
         tipos_consulta = [
+            ('Consulta General', 'Consulta estándar de 30 minutos.', 30),
             ('Primera Vez', 'Primera consulta con el especialista.', 30),
-            ('Control', 'Consulta de seguimiento o control.', 15),
-            ('Urgencia', 'Consulta no programada por una urgencia.', 20)
+            ('Control', 'Consulta de seguimiento o control.', 30),
+            ('Urgencia', 'Consulta no programada por una urgencia.', 30)
         ]
         cursor.executemany("INSERT OR IGNORE INTO TipoConsulta (nombre, descripcion, duracion_minutos) VALUES (?, ?, ?)", tipos_consulta)
 
@@ -105,7 +107,7 @@ def poblar_base_de_datos():
                 
                 # Paciente 2 (Maria Gomez) con Médico 2 (Carlos Lopez) a las 11:30
                 (2, 2, 2, 2, hoy.replace(hour=11, minute=30, second=0, microsecond=0).isoformat(), 
-                 hoy.replace(hour=11, minute=45, second=0, microsecond=0).isoformat(), 'Programado'),
+                 hoy.replace(hour=12, minute=0, second=0, microsecond=0).isoformat(), 'Programado'),
 
                 # Paciente 3 (Lucas Torres) con Médico 1 (Ana García) a las 12:00
                 (3, 1, 1, 1, hoy.replace(hour=12, minute=0, second=0, microsecond=0).isoformat(), 
@@ -118,24 +120,32 @@ def poblar_base_de_datos():
                 turnos_hoy
             )
 
+            # DURACIÓN FIJA DE 30 MINUTOS para todos los turnos
+            DURACION_FIJA = 30
+            
             turnos_ejemplo = []
             for i in range(30):
                 # Datos aleatorios
                 id_paciente = random.randint(1, 4)
                 id_medico = random.randint(1, 4)
-                id_tipo_consulta = random.randint(1, 3)
-                estado = random.choice(estados_turno)
+                # Usar siempre tipo de consulta 1 (Consulta General - 30 minutos)
+                id_tipo_consulta = 1
                 
                 # Fecha aleatoria en los últimos 6 meses o próximos 6 meses
                 dias_aleatorios = random.randint(-180, 180)
                 hora_aleatoria = random.randint(8, 17)
-                minuto_aleatorio = random.choice([0, 15, 30, 45])
+                minuto_aleatorio = random.choice([0, 30])  # Solo en punto o y media
                 fecha_inicio = datetime.datetime.now() + datetime.timedelta(days=dias_aleatorios)
                 fecha_inicio = fecha_inicio.replace(hour=hora_aleatoria, minute=minuto_aleatorio, second=0, microsecond=0)
+
+
+                if(fecha_inicio < datetime.datetime.now()):
+                    estado = random.choice(estados_turno)
+                else:
+                    estado = "Programado"
                 
-                # Duración basada en tipo de consulta
-                duracion = 15 if id_tipo_consulta == 2 else (20 if id_tipo_consulta == 3 else 30)
-                fecha_fin = fecha_inicio + datetime.timedelta(minutes=duracion)
+                # Duración fija de 30 minutos
+                fecha_fin = fecha_inicio + datetime.timedelta(minutes=DURACION_FIJA)
                 
                 # Obtener especialidad del médico
                 cursor.execute("SELECT id_especialidad FROM Medico WHERE id_medico = ?", (id_medico,))
