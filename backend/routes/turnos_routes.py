@@ -101,17 +101,6 @@ def get_turno(id_turno):
     else:
         return jsonify({"error": "Turno no encontrado"}), 404
 
-
-@turnos_bp.route('/dia/<string:fecha>', methods=['GET'])
-def get_turnos_por_dia(fecha):
-    """
-    Obtiene todos los turnos de un día específico (sin filtro de médico).
-    Ej: /turnos/dia/2025-11-12
-    """
-    turnos = turno_dao.obtener_turnos_por_dia(fecha)
-    return jsonify(turnos)
-
-
 @turnos_bp.route('/calendario', methods=['GET'])
 def get_turnos_calendario():
     """
