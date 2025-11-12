@@ -1,0 +1,316 @@
+/* ===================================
+   ESTILOS PARA VISTA DE TURNOS DEL DÍA
+   =================================== */
+
+@import '../../../styles/entity-base.css';
+
+.turnos-dia-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Badge del día actual */
+.badge-dia-actual {
+    display: inline-block;
+    margin-left: 1rem;
+    padding: 0.25rem 0.75rem;
+    background-color: #ffc107;
+    color: #000;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Resumen de turnos */
+.turnos-resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.resumen-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, var(--entity-primary-light) 0%, white 100%);
+    border: 2px solid var(--entity-border);
+    border-radius: var(--entity-radius);
+    transition: transform 0.2s;
+}
+
+.resumen-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.resumen-numero {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--entity-primary);
+}
+
+.resumen-label {
+    font-size: 0.9rem;
+    color: var(--entity-text-muted);
+    margin-top: 0.25rem;
+}
+
+/* Lista de turnos */
+.turnos-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Tarjeta de turno */
+.turno-card {
+    display: grid;
+    grid-template-columns: 100px 1fr auto auto;
+    gap: 1.5rem;
+    padding: 1.25rem;
+    background: white;
+    border: 2px solid var(--entity-border);
+    border-radius: var(--entity-radius);
+    transition: all 0.2s;
+    align-items: center;
+}
+
+.turno-card:hover {
+    border-color: var(--entity-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Hora del turno */
+.turno-hora {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--entity-primary-light);
+    border-radius: var(--entity-radius);
+    min-width: 80px;
+}
+
+.hora-inicio {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--entity-primary);
+}
+
+.hora-fin {
+    font-size: 0.85rem;
+    color: var(--entity-text-muted);
+    margin-top: 0.25rem;
+}
+
+/* Información del turno */
+.turno-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.turno-paciente,
+.turno-medico,
+.turno-especialidad,
+.turno-tipo {
+    font-size: 0.95rem;
+    color: var(--entity-text);
+}
+
+.turno-dni {
+    color: var(--entity-text-muted);
+    font-size: 0.85rem;
+}
+
+/* Estado del turno */
+.turno-estado {
+    display: flex;
+    align-items: center;
+}
+
+.badge-estado {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    min-width: 100px;
+}
+
+.estado-programado {
+    background-color: #cfe2ff;
+    color: #084298;
+}
+
+.estado-asistido {
+    background-color: #d1e7dd;
+    color: #0a3622;
+}
+
+.estado-no-asistido {
+    background-color: #f8d7da;
+    color: #842029;
+}
+
+.estado-cancelado {
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+/* Acciones del turno */
+.turno-acciones {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-accion {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-accion:hover {
+    transform: scale(1.1);
+}
+
+.btn-ver {
+    background-color: #0dcaf0;
+}
+
+.btn-ver:hover {
+    background-color: #0aa2c0;
+}
+
+.btn-editar {
+    background-color: #ffc107;
+}
+
+.btn-editar:hover {
+    background-color: #e0a800;
+}
+
+.btn-consulta {
+    background-color: #198754;
+}
+
+.btn-consulta:hover {
+    background-color: #146c43;
+}
+
+.btn-cancelar {
+    background-color: #dc3545;
+}
+
+.btn-cancelar:hover {
+    background-color: #bb2d3b;
+}
+
+.btn-eliminar {
+    background-color: #6c757d;
+}
+
+.btn-eliminar:hover {
+    background-color: #5c636a;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    background: var(--entity-bg-light);
+    border-radius: var(--entity-radius);
+    border: 2px dashed var(--entity-border);
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+    color: var(--entity-text-muted);
+    margin-bottom: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .turno-card {
+        grid-template-columns: 80px 1fr auto;
+        gap: 1rem;
+    }
+
+    .turno-acciones {
+        grid-column: 2 / 4;
+        justify-content: flex-start;
+        margin-top: 0.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .entity-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .entity-header-actions {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .entity-header-actions button {
+        width: 100%;
+    }
+
+    .turnos-resumen {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .turno-card {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .turno-hora {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .hora-fin::before {
+        content: " - ";
+    }
+
+    .turno-estado {
+        justify-content: center;
+    }
+
+    .turno-acciones {
+        grid-column: 1;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .turnos-resumen {
+        grid-template-columns: 1fr;
+    }
+
+    .resumen-card {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 1rem;
+    }
+
+    .resumen-numero {
+        font-size: 1.5rem;
+    }
+}

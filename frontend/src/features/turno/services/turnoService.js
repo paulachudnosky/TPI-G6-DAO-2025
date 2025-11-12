@@ -27,8 +27,94 @@ export const deleteTurno = async (id) => {
     return response.data;
 };
 
+/**
+ * Obtiene todos los turnos de un día específico
+ * @param {string} fecha - Fecha en formato 'YYYY-MM-DD'
+ */
+export const obtenerTurnosPorDia = async (fecha) => {
+    const response = await apiClient.get(`${TURNOS_API_URL}/dia/${fecha}`);
+    return response.data;
+};
+
+/**
+ * Obtiene un resumen de turnos agrupados por día para un mes específico
+ * @param {number} anio - Año
+ * @param {number} mes - Mes (1-12)
+ */
+export const obtenerTurnosMes = async (anio, mes) => {
+    const response = await apiClient.get(`${TURNOS_API_URL}/calendario`, {
+        params: { anio, mes }
+    });
+    return response.data;
+};
+
+/**
+ * Obtiene los turnos de un médico específico
+ * @param {number} idMedico - ID del médico
+ */
+export const obtenerTurnosPorMedico = async (idMedico) => {
+    const response = await apiClient.get(`${TURNOS_API_URL}/medico/${idMedico}`);
+    return response.data;
+};
+
+/**
+ * Obtiene los turnos de un médico para un día específico
+ * @param {number} idMedico - ID del médico
+ * @param {string} fecha - Fecha en formato 'YYYY-MM-DD'
+ */
+export const obtenerTurnosPorMedicoYDia = async (idMedico, fecha) => {
+    const response = await apiClient.get(`${TURNOS_API_URL}/medico/${idMedico}/dia`, {
+        params: { fecha }
+    });
+    return response.data;
+};
+
+/**
+ * Actualiza solo el estado de un turno
+ * @param {number} id - ID del turno
+ * @param {string} estado - Nuevo estado ('Programado', 'Asistido', 'No Asistido', 'Cancelado')
+ */
+export const actualizarEstadoTurno = async (id, estado) => {
+    const response = await apiClient.put(`${TURNOS_API_URL}/${id}/estado`, { estado });
+    return response.data;
+};
+
+/**
+ * Valida si un turno corresponde al día actual
+ * @param {number} id - ID del turno
+ * @returns {Object} { es_dia_actual: boolean, fecha_turno: string }
+ */
+export const validarTurnoDiaActual = async (id) => {
+    const response = await apiClient.get(`${TURNOS_API_URL}/${id}/validar-dia-actual`);
+    return response.data;
+};
+
+/**
+ * Actualiza automáticamente los turnos vencidos a 'No Asistido'
+ * @returns {Object} { cantidad_actualizada, mensaje }
+ */
+export const actualizarTurnosVencidos = async () => {
+    const response = await apiClient.post(`${TURNOS_API_URL}/actualizar-vencidos`);
+    return response.data;
+};
+
+/**
+ * Obtiene la lista de turnos vencidos
+ * @returns {Object} { cantidad, turnos: [] }
+ */
+export const obtenerTurnosVencidos = async () => {
+    const response = await apiClient.get(`${TURNOS_API_URL}/vencidos`);
+    return response.data;
+};
+
 // Export nombrado esperado por TurnoList.jsx
 export const fetchTurnos = getTurnos;
+
+// Alias para mantener consistencia
+export const crearTurno = createTurno;
+export const actualizarTurno = updateTurno;
+export const eliminarTurno = deleteTurno;
+export const obtenerTurnoPorId = getTurnoById;
 
 // Export default de servicio CRUD
 const turnoService = {
@@ -37,6 +123,12 @@ const turnoService = {
     create: createTurno,
     update: updateTurno,
     remove: deleteTurno,
+    obtenerPorDia: obtenerTurnosPorDia,
+    obtenerMes: obtenerTurnosMes,
+    obtenerPorMedico: obtenerTurnosPorMedico,
+    obtenerPorMedicoYDia: obtenerTurnosPorMedicoYDia,
+    actualizarEstado: actualizarEstadoTurno,
+    validarDiaActual: validarTurnoDiaActual,
 };
 
 export default turnoService;

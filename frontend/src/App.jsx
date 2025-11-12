@@ -17,12 +17,14 @@ import ConsultaView from './features/consulta/pages/ConsultaView';
 import TipoConsultaList from './features/tipo-consulta/pages/TipoConsultaList';
 import TipoMedicamentoList from './features/tipo-medicamento/pages/TipoMedicamentoList';
 import TurnoList from './features/turno/pages/TurnoList';
+import CalendarioTurnos from './features/turno/pages/CalendarioTurnos';
+import TurnosDiaView from './features/turno/pages/TurnosDiaView';
 
 // CRUD horarios de atención
 import HorarioAtencionList from './features/horario-atencion/pages/HorarioAtencionList';
 import HorarioAtencionCreate from './features/horario-atencion/pages/HorarioAtencionCreate';
 import HorarioAtencionEdit from './features/horario-atencion/pages/HorarioAtencionEdit';
-  
+
 
 // CRUD especialidades
 import EspecialidadList from './features/especialidad/pages/EspecialidadList';
@@ -63,7 +65,7 @@ function App() {
           <Route path="/horario-atencion/:id/editar" element={<HorarioAtencionEdit />} />
 
           <Route path="/medicamento" element={<MedicamentoList />} />
-          
+
           {/* Rutas CRUD Médico */}
           <Route path="/medico" element={<MedicoList />} />
           <Route path="/medico/nuevo" element={<MedicoCreate />} />
@@ -78,11 +80,16 @@ function App() {
 
           <Route path="/tipo-consulta" element={<TipoConsultaList />} />
           <Route path="/tipo-medicamento" element={<TipoMedicamentoList />} />
+
+          {/* Rutas de Turnos */}
           <Route path="/turno" element={<TurnoList />} />
+          <Route path="/turnos" element={<TurnoList />} />
+          <Route path="/turnos/calendario" element={<CalendarioTurnos />} />
+          <Route path="/turnos/dia/:fecha" element={<TurnosDiaView />} />
 
           {/* Ruta de Estadísticas */}
           <Route path="/estadisticas" element={<EstadisticasPage />} />
-          
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>
