@@ -1,21 +1,30 @@
+// src/components/layout/Layout.jsx
 import React from 'react';
-import Navbar from './Navbar';
+import { Container, Row, Col } from 'react-bootstrap';
+import AppNavbar from './Navbar'; // Importamos el Navbar (asumiendo que lo reemplazaste)
 import Sidebar from './Sidebar';
 
 const Layout = ({ children }) => {
     return (
-        <div className="bg-light min-vh-100 d-flex flex-column">
-            <Navbar />
-            <div className="container-fluid flex-grow-1">
-                <div className="row h-100">
-                    <aside className="col-12 col-md-3 col-lg-2 bg-white border-end p-0">
-                        <Sidebar />
-                    </aside>
-                    <main className="col-12 col-md-9 col-lg-10 p-3 p-md-4">
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+            
+            <AppNavbar /> {/* La cabecera blanca de arriba */}
+
+            <Container fluid style={{ flex: 1 }}>
+                <Row style={{ minHeight: 'calc(100vh - 56px)' }}>
+                    
+                    {/* ESTA ES LA COLUMNA CLAVE */}
+                    <Col md={3} lg={2} className="bg-dark p-3"> {/* <-- Fondo Negro */}
+                        <Sidebar /> {/* Y adentro va tu sidebar nueva */}
+                    </Col>
+
+                    {/* El contenido de tu página (Home, Turno, Medico, etc.) */}
+                    <Col md={9} lg={10} className="p-4 bg-light">
                         {children}
-                    </main>
-                </div>
-            </div>
+                    </Col>
+
+                </Row>
+            </Container>
         </div>
     );
 };
