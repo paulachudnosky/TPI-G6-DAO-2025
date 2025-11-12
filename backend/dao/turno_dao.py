@@ -386,6 +386,65 @@ def obtener_turnos_por_dia_y_medico(id_medico, fecha_str):
         if conn:
             conn.close()
 
+def obtener_turnos_por_dia(fecha_str):
+    """Obtiene todos los turnos para un día específico para todos los médicos."""
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        # Usamos la función DATE() de SQLite para comparar solo la parte de la fecha
+        cursor.execute(
+            """SELECT t.id_turno, t.fecha_hora_inicio, t.fecha_hora_fin, t.estado,
+                      p.id_paciente, p.nombre AS paciente_nombre, p.apellido AS paciente_apellido,
+                      m.id_medico, m.nombre AS medico_nombre, m.apellido AS medico_apellido,
+                      tc.id_tipo, tc.nombre AS tipo_consulta_nombre
+               FROM Turno t
+               JOIN Paciente p ON t.id_paciente = p.id_paciente
+               JOIN Medico m ON t.id_medico = m.id_medico
+               JOIN TipoConsulta tc ON t.id_tipo_consulta = tc.id_tipo
+               WHERE DATE(t.fecha_hora_inicio) = ?
+               ORDER BY t.fecha_hora_inicio ASC""",
+            (fecha_str,)
+        )
+        rows = cursor.fetchall()
+        # Reutilizamos la lógica de `obtener_turnos_por_periodo` para mapear los resultados
+        return [dict(zip([column[0] for column in cursor.description], row)) for row in rows]
+    except sqlite3.Error as e:
+        print(f"Error al obtener turnos por día: {e}")
+        return []
+    finally:
+        if conn:
+            conn.close()
+
+def obtener_turnos_por_dia(fecha_str):
+    """Obtiene todos los turnos para un día específico para todos los médicos."""
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        # Usamos la función DATE() de SQLite para comparar solo la parte de la fecha
+        cursor.execute(
+            """SELECT t.id_turno, t.fecha_hora_inicio, t.fecha_hora_fin, t.estado,
+                      p.id_paciente, p.nombre AS paciente_nombre, p.apellido AS paciente_apellido,
+                      m.id_medico, m.nombre AS medico_nombre, m.apellido AS medico_apellido,
+                      tc.id_tipo, tc.nombre AS tipo_consulta_nombre
+               FROM Turno t
+               JOIN Paciente p ON t.id_paciente = p.id_paciente
+               JOIN Medico m ON t.id_medico = m.id_medico
+               JOIN TipoConsulta tc ON t.id_tipo_consulta = tc.id_tipo
+               WHERE DATE(t.fecha_hora_inicio) = ?
+               ORDER BY t.fecha_hora_inicio ASC""",
+            (fecha_str,)
+        )
+        rows = cursor.fetchall()
+        return [dict(zip([column[0] for column in cursor.description], row)) for row in rows]
+    except sqlite3.Error as e:
+        print(f"Error al obtener turnos por día: {e}")
+        return []
+    finally:
+        if conn:
+            conn.close()
+
 def actualizar_estado_turno(id_turno, nuevo_estado):
     """Actualiza solo el estado de un turno (ej: 'Cancelado', 'Realizado')."""
     conn = None

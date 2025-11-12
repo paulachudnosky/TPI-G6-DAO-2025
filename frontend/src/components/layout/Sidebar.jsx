@@ -23,6 +23,7 @@ const Sidebar = () => {
                 <Item to="/pacientes">Pacientes</Item>
                 <Item to="/medicamento">Medicamentos</Item>
                 <Item to="/tipo-consulta">Tipos de Consulta</Item>
+                <Item to="/consulta">Consultas</Item>
                 <Item to="/tipo-medicamento">Tipos de Medicamento</Item>
                 <Item to="/historial-clinico">Historial Clínico</Item>
                 <Item to="/horario-atencion">Horarios de Atención</Item>

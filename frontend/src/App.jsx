@@ -11,6 +11,12 @@ import PacienteEdit from './features/paciente/pages/PacienteEdit';
 import PacienteView from './features/paciente/pages/PacienteView';
 
 import HistorialClinicoList from './features/historial-clinico/pages/HistorialClinicoList';
+
+
+// Crud Consultas
+import ConsultaAtencion from './features/consulta/pages/ConsultaAtencion'; 
+import ConsultaList from './features/consulta/pages/ConsultaList'; 
+import ConsultaRegistro from './features/consulta/pages/ConsultaRegistro'; 
 import ConsultaView from './features/consulta/pages/ConsultaView';
 
 
@@ -54,8 +60,12 @@ function App() {
 
           {/* Rutas Historial Clinico */}
           <Route path="/historial-clinico" element={<HistorialClinicoList />} />
+          
+          <Route path="/consulta" element={<ConsultaAtencion />} />
+          <Route path="/consulta/registrar" element={<ConsultaRegistro />} />
+          <Route path="/consultas/historial" element={<ConsultaList />} />
           <Route path="/consulta/:id" element={<ConsultaView />} />
-
+          
           {/* Rutas CRUD Horario de Atención */}
 
           <Route path="/horario-atencion" element={<HorarioAtencionList />} />
