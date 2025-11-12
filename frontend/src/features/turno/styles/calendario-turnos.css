@@ -1,0 +1,211 @@
+/* ===================================
+   ESTILOS PARA CALENDARIO DE TURNOS
+   =================================== */
+
+@import '../../../styles/entity-base.css';
+
+.calendario-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Navegación del mes */
+.calendario-navegacion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: var(--entity-bg-light);
+    border-radius: var(--entity-radius);
+}
+
+.calendario-titulo-mes {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--entity-text);
+    margin: 0;
+}
+
+.btn-calendario-nav {
+    padding: 0.5rem 1rem;
+    background-color: var(--entity-primary);
+    color: white;
+    border: none;
+    border-radius: var(--entity-radius);
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.btn-calendario-nav:hover {
+    background-color: var(--entity-primary-hover);
+}
+
+/* Grid del calendario */
+.calendario-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Headers de días */
+.calendario-dia-header {
+    text-align: center;
+    font-weight: 600;
+    padding: 0.75rem;
+    color: var(--entity-text);
+    background-color: var(--entity-bg-light);
+    border-radius: var(--entity-radius);
+    font-size: 0.9rem;
+}
+
+/* Días vacíos (antes del primer día del mes) */
+.calendario-dia-vacio {
+    background-color: transparent;
+}
+
+/* Día del calendario */
+.calendario-dia {
+    position: relative;
+    min-height: 80px;
+    padding: 0.5rem;
+    border: 2px solid var(--entity-border);
+    border-radius: var(--entity-radius);
+    cursor: pointer;
+    transition: all 0.2s;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.calendario-dia:hover {
+    border-color: var(--entity-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Número del día */
+.calendario-dia-numero {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--entity-text);
+}
+
+/* Badge de cantidad de turnos */
+.calendario-badge {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background-color: var(--entity-primary);
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    min-width: 24px;
+    text-align: center;
+}
+
+/* Día actual */
+.calendario-dia-hoy {
+    border-color: #ffc107;
+    background-color: #fff9e6;
+}
+
+.calendario-dia-hoy .calendario-dia-numero {
+    color: #ff9800;
+    font-weight: 700;
+}
+
+/* Día con turnos */
+.calendario-dia-con-turnos {
+    border-color: var(--entity-primary);
+    background-color: var(--entity-primary-light);
+}
+
+/* Leyenda */
+.calendario-leyenda {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    padding: 1rem;
+    background-color: var(--entity-bg-light);
+    border-radius: var(--entity-radius);
+    flex-wrap: wrap;
+}
+
+.leyenda-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--entity-text);
+}
+
+.leyenda-cuadro {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    border: 2px solid var(--entity-border);
+}
+
+.leyenda-hoy {
+    background-color: #fff9e6;
+    border-color: #ffc107;
+}
+
+.leyenda-con-turnos {
+    background-color: var(--entity-primary-light);
+    border-color: var(--entity-primary);
+}
+
+.leyenda-sin-turnos {
+    background-color: white;
+    border-color: var(--entity-border);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .calendario-navegacion {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .calendario-titulo-mes {
+        font-size: 1.25rem;
+    }
+
+    .calendario-grid {
+        gap: 0.25rem;
+    }
+
+    .calendario-dia {
+        min-height: 60px;
+        padding: 0.25rem;
+    }
+
+    .calendario-dia-numero {
+        font-size: 0.9rem;
+    }
+
+    .calendario-badge {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.4rem;
+        min-width: 20px;
+    }
+
+    .calendario-dia-header {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .calendario-leyenda {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+}
