@@ -3,7 +3,7 @@ import datetime
 import random
 from database import get_db_connection  # Importa la conexión central
 
-estados_turno = ["Programado", "Asistido", "No Asistido"]
+estados_turno = ["Asistido", "No Asistido"]
 
 def poblar_base_de_datos():
     """
@@ -108,7 +108,6 @@ def poblar_base_de_datos():
                 id_medico = random.randint(1, 4)
                 # Usar siempre tipo de consulta 1 (Consulta General - 30 minutos)
                 id_tipo_consulta = 1
-                estado = random.choice(estados_turno)
                 
                 # Fecha aleatoria en los últimos 6 meses o próximos 6 meses
                 dias_aleatorios = random.randint(-180, 180)
@@ -116,6 +115,12 @@ def poblar_base_de_datos():
                 minuto_aleatorio = random.choice([0, 30])  # Solo en punto o y media
                 fecha_inicio = datetime.datetime.now() + datetime.timedelta(days=dias_aleatorios)
                 fecha_inicio = fecha_inicio.replace(hour=hora_aleatoria, minute=minuto_aleatorio, second=0, microsecond=0)
+
+
+                if(fecha_inicio < datetime.datetime.now()):
+                    estado = random.choice(estados_turno)
+                else:
+                    estado = "Programado"
                 
                 # Duración fija de 30 minutos
                 fecha_fin = fecha_inicio + datetime.timedelta(minutes=DURACION_FIJA)
