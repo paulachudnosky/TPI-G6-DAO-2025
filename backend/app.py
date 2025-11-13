@@ -17,9 +17,20 @@ from routes.estadisticas_routes import estadisticas_bp
 
 
 app = Flask(__name__)
+
+# Deshabilitar el redirect automático de barras finales para evitar problemas con CORS
+app.url_map.strict_slashes = False
+
 # Habilitar CORS para permitir llamadas desde el frontend en desarrollo
-# Agrego el :5173 porque aparentemente a copilot le encanta confundirme el puerto 3000 por 5173
-CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "http://localhost:5173"]}}) 
+# Configuración más permisiva para desarrollo
+CORS(app, 
+     resources={r"/*": {
+         "origins": ["http://localhost:3000", "http://localhost:5173"],
+         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+         "allow_headers": ["Content-Type", "Authorization"],
+         "supports_credentials": True
+     }
+}) 
 
 # --- REGISTRO DE BLUEPRINTS ---
 app.register_blueprint(medicos_bp)
