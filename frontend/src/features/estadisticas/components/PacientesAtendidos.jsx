@@ -44,9 +44,10 @@ const PacientesAtendidos = () => {
     };
 
     return (
-        <div className="stat-card">
-            <h4 className="stat-card-title">Pacientes Únicos Atendidos</h4>
-            <div className="stat-filters">
+        <div className="report-layout">
+            {/* Columna de Filtros (Izquierda) */}
+            <div className="report-filters">
+                <h3 className="report-section-title">Filtros</h3>
                 <div className="entity-form-group">
                     <label className="entity-form-label required">Desde</label>
                     <input type="date" name="fecha_inicio" value={filters.fecha_inicio} onChange={handleChange} className="entity-form-input" required />
@@ -58,7 +59,7 @@ const PacientesAtendidos = () => {
                 <div className="entity-form-group">
                     <label className="entity-form-label required">Especialidad</label>
                     <select name="id_especialidad" value={filters.id_especialidad} onChange={handleChange} className="entity-form-input" required>
-                        <option value="">Seleccione...</option>
+                        <option value="">Seleccione una especialidad</option>
                         {especialidades.map(e => (
                             <option key={e.id_especialidad} value={e.id_especialidad}>{e.nombre}</option>
                         ))}
@@ -69,15 +70,22 @@ const PacientesAtendidos = () => {
                 </button>
             </div>
 
-            {error && <div className="entity-alert entity-alert-danger" style={{ marginTop: '1rem' }}>{error}</div>}
-
-            {data && (
-                <div className="stat-result">
-                    <p>Total de pacientes únicos atendidos:</p>
-                    <span className="stat-big-number">{data.pacientes_atendidos}</span>
-                </div>
-            )}
-             {!data && !loading && <p className="entity-text-muted" style={{ marginTop: '1rem' }}>Complete los filtros obligatorios y haga clic en "Buscar".</p>}
+            {/* Columna de Resultados (Derecha) */}
+            <div className="report-results">
+                <h3 className="report-section-title">Resultados</h3>
+                {error && <div className="entity-alert entity-alert-danger">{error}</div>}
+                
+                {loading ? (
+                    <div className="entity-loading">Cargando...</div>
+                ) : data ? (
+                    <div className="stat-result-card">
+                        <p className="stat-result-label">Total de pacientes únicos atendidos:</p>
+                        <span className="stat-result-number">{data.pacientes_atendidos}</span>
+                    </div>
+                ) : (
+                    <div className="empty-state">Complete los filtros obligatorios y haga clic en "Buscar".</div>
+                )}
+            </div>
         </div>
     );
 };

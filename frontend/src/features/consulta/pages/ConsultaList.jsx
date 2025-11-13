@@ -4,7 +4,14 @@ import RecetaMedica from '../components/RecetaMedica'; // Importamos el nuevo co
 import '../styles/consulta.css';
 
 const ConsultaList = () => {
-    const [fecha, setFecha] = useState(new Date().toISOString().split('T')[0]);
+    // Corregido: Crear la fecha en formato YYYY-MM-DD usando la zona horaria local
+    // para evitar el problema de que .toISOString() pueda devolver el día anterior.
+    const getTodayLocal = () => {
+        const hoy = new Date();
+        return new Date(hoy.getTime() - (hoy.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+    };
+
+    const [fecha, setFecha] = useState(getTodayLocal());
     const [consultas, setConsultas] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);

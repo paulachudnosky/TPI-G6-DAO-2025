@@ -24,7 +24,7 @@ const RecetaMedica = ({
     <div className={styles.recetaContainer}>
       {/* --- Sección 1: Header --- */}
       <header className={styles.header}>
-        <div className={styles.logo}>JERÁRQUICOS Salud</div>
+        <div className={styles.logo}>Clinica Curae  </div>
         <div className={styles.headerInfo}>
           <p><strong>Fecha Receta:</strong> {fechaEmision}</p>
           <p><strong>Recetario:</strong> {numeroRecetario}</p>

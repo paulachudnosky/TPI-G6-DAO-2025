@@ -82,9 +82,10 @@ const EstadoTurnos = () => {
     };
 
     return (
-        <div className="stat-card">
-            <h4 className="stat-card-title">Gráfico de Asistencia de Turnos</h4>
-            <div className="stat-filters">
+        <div className="report-layout">
+            {/* Columna de Filtros (Izquierda) */}
+            <div className="report-filters">
+                <h3 className="report-section-title">Filtros</h3>
                 <div className="entity-form-group">
                     <label className="entity-form-label">Desde</label>
                     <input type="date" name="fecha_inicio" value={fechas.fecha_inicio} onChange={handleChange} className="entity-form-input" />
@@ -94,20 +95,25 @@ const EstadoTurnos = () => {
                     <input type="date" name="fecha_fin" value={fechas.fecha_fin} onChange={handleChange} className="entity-form-input" />
                 </div>
                 <button onClick={handleSearch} disabled={loading} className="btn-entity-primary">
-                    {loading ? 'Buscando...' : 'Buscar'}
+                    {loading ? 'Buscando...' : 'Generar Gráfico'}
                 </button>
             </div>
 
-            {error && <div className="entity-alert entity-alert-danger" style={{ marginTop: '1rem' }}>{error}</div>}
-
-            {data && (
-                <div className="chart-and-legend-container">
+            {/* Columna de Resultados (Derecha) */}
+            <div className="report-results">
+                <h3 className="report-section-title">Gráfico de Asistencia</h3>
+                {error && <div className="entity-alert entity-alert-danger">{error}</div>}
+                
+                {loading ? (
+                    <div className="entity-loading">Cargando...</div>
+                ) : data ? (
                     <div className="chart-wrapper-large">
                         <Pie data={chartData} options={chartOptions} />
                     </div>
-                </div>
-            )}
-            {!data && !loading && <p className="entity-text-muted" style={{ marginTop: '1rem' }}>Seleccione un rango de fechas y haga clic en "Buscar".</p>}
+                ) : (
+                    <div className="empty-state">Seleccione un rango de fechas (opcional) y haga clic en "Generar Gráfico".</div>
+                )}
+            </div>
         </div>
     );
 };

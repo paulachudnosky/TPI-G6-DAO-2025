@@ -42,8 +42,12 @@ const EstadisticasPage = () => {
                 ))}
             </div>
 
-            <div className="report-content">
-                {selectedReport && reportes[selectedReport].component}
+            <div className="report-view-container">
+                {selectedReport ? (
+                    reportes[selectedReport].component
+                ) : (
+                    <div className="report-empty-state">Seleccione un informe para comenzar.</div>
+                )}
             </div>
         </div>
     );
