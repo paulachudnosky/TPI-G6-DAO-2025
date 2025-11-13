@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import MedicamentoList from './features/medicamento/pages/MedicamentoList';
 // CRUD pacientes
