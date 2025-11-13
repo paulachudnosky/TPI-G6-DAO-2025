@@ -53,7 +53,13 @@ def add_turno():
     id_especialidad = data.get('id_especialidad')
     
     if not all([id_paciente, id_medico, id_tipo_consulta, fecha_hora_inicio]):
-        return jsonify({"error": "Faltan datos obligatorios (paciente, medico, tipo_consulta, fecha_hora_inicio)"}), 400
+        missing = []
+        if not id_paciente: missing.append('id_paciente')
+        if not id_medico: missing.append('id_medico')
+        if not id_tipo_consulta: missing.append('id_tipo_consulta')
+        if not fecha_hora_inicio: missing.append('fecha_hora_inicio')
+        error_msg = f"Faltan datos obligatorios: {', '.join(missing)}"
+        return jsonify({"error": error_msg}), 400
     
     exito, mensaje = turno_dao.crear_turno(
         id_paciente, id_medico, id_tipo_consulta, fecha_hora_inicio, id_especialidad

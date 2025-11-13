@@ -128,7 +128,7 @@ const TurnosDiaView = () => {
                     </button>
                     <button
                         className="btn-entity-secondary"
-                        onClick={() => navigate('/turnos/calendario')}
+                        onClick={() => navigate('/turnos')}
                     >
                         📅 Ver Calendario
                     </button>
