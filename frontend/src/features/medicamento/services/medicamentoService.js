@@ -1,38 +1,28 @@
-import apiClient from '../../../services/apiClient';
+import apiClient from '../../../services/apiClient'; // Asegúrate que esta ruta sea correcta
 
-const BASE_URL = '/medicamentos';
+const MEDICAMENTO_BASE_URL = '/medicamentos/';
 
 export const getMedicamentos = async () => {
-    const response = await apiClient.get(BASE_URL);
+    const response = await apiClient.get(MEDICAMENTO_BASE_URL);
     return response.data;
 };
 
-export const getMedicamentoById = async (id) => {
-    const response = await apiClient.get(`${BASE_URL}/${id}`);
+export const getMedicamento = async (id) => {
+    const response = await apiClient.get(`${MEDICAMENTO_BASE_URL}${id}`);
     return response.data;
 };
 
-export const createMedicamento = async (medicamento) => {
-    const response = await apiClient.post(BASE_URL, medicamento);
+export const createMedicamento = async (medicamentoData) => {
+    const response = await apiClient.post(MEDICAMENTO_BASE_URL, medicamentoData);
     return response.data;
 };
 
-export const updateMedicamento = async (id, medicamento) => {
-    const response = await apiClient.put(`${BASE_URL}/${id}`, medicamento);
+export const updateMedicamento = async (id, medicamentoData) => {
+    const response = await apiClient.put(`${MEDICAMENTO_BASE_URL}${id}`, medicamentoData);
     return response.data;
 };
 
 export const deleteMedicamento = async (id) => {
-    await apiClient.delete(`${BASE_URL}/${id}`);
+    const response = await apiClient.delete(`${MEDICAMENTO_BASE_URL}${id}`);
+    return response.data;
 };
-
-// Export default para consumir como servicio
-const medicamentoService = {
-    getAll: getMedicamentos,
-    getById: getMedicamentoById,
-    create: createMedicamento,
-    update: updateMedicamento,
-    remove: deleteMedicamento,
-};
-
-export default medicamentoService;

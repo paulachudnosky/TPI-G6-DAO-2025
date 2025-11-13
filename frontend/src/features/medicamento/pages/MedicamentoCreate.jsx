@@ -1,26 +1,32 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import MedicamentoForm from '../components/MedicamentoForm';
-import medicamentoService from '../services/medicamentoService';
+import { createMedicamento } from '../services/medicamentoService';
+import { useNavigate } from 'react-router-dom';
+// import '../styles/medicamento.css';
 
 const MedicamentoCreate = () => {
-    const [error, setError] = useState(null);
     const navigate = useNavigate();
 
-    const handleSubmit = async (medicamentoData) => {
+    const onSubmit = async (data) => {
         try {
-            await medicamentoService.createMedicamento(medicamentoData);
-            navigate('/medicamentos'); // Redirect to the list of medicamentos after creation
+            await createMedicamento(data);
+            alert('✅ Medicamento creado exitosamente');
+            navigate('/medicamento');
         } catch (err) {
-            setError('Error creating medicamento. Please try again.');
+            const errorMessage = err.response?.data?.error || 'Error al crear el medicamento.';
+            alert(`❌ ${errorMessage}`);
         }
     };
 
     return (
-        <div>
-            <h1>Create Medicamento</h1>
-            {error && <p className="error">{error}</p>}
-            <MedicamentoForm onSubmit={handleSubmit} />
+        <div className="entity-container">
+            <div className="entity-header">
+                <h2>➕ Nuevo Medicamento</h2>
+                <button className="btn-entity-secondary" onClick={() => navigate('/medicamento')}>
+                    ← Volver a la lista
+                </button>
+            </div>
+            <MedicamentoForm onSubmit={onSubmit} />
         </div>
     );
 };

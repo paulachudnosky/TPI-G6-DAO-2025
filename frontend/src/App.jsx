@@ -2,9 +2,13 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
+// CRUD Medicamentos
 import MedicamentoList from './features/medicamento/pages/MedicamentoList';
+import MedicamentoCreate from './features/medicamento/pages/MedicamentoCreate';
+import MedicamentoEdit from './features/medicamento/pages/MedicamentoEdit';
+import MedicamentoView from './features/medicamento/pages/MedicamentoView';
+
 // CRUD pacientes
 import PacienteList from './features/paciente/pages/PacienteList';
 import PacienteCreate from './features/paciente/pages/PacienteCreate';
@@ -75,7 +79,11 @@ function App() {
           <Route path="/horario-atencion/nuevo" element={<HorarioAtencionCreate />} />
           <Route path="/horario-atencion/:id/editar" element={<HorarioAtencionEdit />} />
 
+          {/* Rutas CRUD Medicamento */}
           <Route path="/medicamento" element={<MedicamentoList />} />
+          <Route path="/medicamento/nuevo" element={<MedicamentoCreate />} />
+          <Route path="/medicamento/:id/editar" element={<MedicamentoEdit />} />
+          <Route path="/medicamento/:id" element={<MedicamentoView />} />
 
           {/* Rutas CRUD Médico */}
           <Route path="/medico" element={<MedicoList />} />
