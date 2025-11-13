@@ -175,7 +175,7 @@
     .form-row {
         grid-template-columns: 1fr;
     }
-    
+
     .radio-group {
         flex-direction: column;
         gap: 0.5rem;
@@ -357,6 +357,7 @@
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
