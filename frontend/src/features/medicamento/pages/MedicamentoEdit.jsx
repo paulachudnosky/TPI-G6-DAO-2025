@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import medicamentoService from '../services/medicamentoService';
 import MedicamentoForm from '../components/MedicamentoForm';
+import { getMedicamento, updateMedicamento } from '../services/medicamentoService';
+// import '../styles/medicamento.css';
 
 const MedicamentoEdit = () => {
     const { id } = useParams();
@@ -13,33 +14,38 @@ const MedicamentoEdit = () => {
     useEffect(() => {
         const fetchMedicamento = async () => {
             try {
-                const data = await medicamentoService.getMedicamentoById(id);
+                const data = await getMedicamento(id);
                 setMedicamento(data);
             } catch (err) {
-                setError('Error fetching medicamento data');
+                setError('Error al cargar el medicamento');
             } finally {
                 setLoading(false);
             }
         };
-
         fetchMedicamento();
     }, [id]);
 
-    const handleSubmit = async (updatedMedicamento) => {
+    const handleSubmit = async (updatedData) => {
         try {
-            await medicamentoService.updateMedicamento(id, updatedMedicamento);
-            navigate('/medicamentos'); // Redirect to the list page after editing
+            await updateMedicamento(id, updatedData);
+            alert('✅ Medicamento actualizado exitosamente');
+            navigate('/medicamento');
         } catch (err) {
-            setError('Error updating medicamento');
+            setError('Error al actualizar el medicamento');
         }
     };
 
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>{error}</div>;
+    if (loading) return <div className="entity-loading">Cargando...</div>;
+    if (error) return <div className="entity-alert entity-alert-danger">{error}</div>;
 
     return (
-        <div>
-            <h2>Edit Medicamento</h2>
+        <div className="entity-container">
+            <div className="entity-header">
+                <h2>✏️ Editar Medicamento</h2>
+                <button className="btn-entity-secondary" onClick={() => navigate('/medicamento')}>
+                    ← Volver a la lista
+                </button>
+            </div>
             {medicamento && (
                 <MedicamentoForm
                     initialData={medicamento}
