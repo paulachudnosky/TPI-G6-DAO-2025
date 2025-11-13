@@ -17,8 +17,7 @@ const Sidebar = () => {
             </div>
             <div className="list-group list-group-flush">
                 <Item to="/">Home</Item>
-                <Item to="/turnos">Turnos</Item>
-                <Item to="/turnos/calendario">📅 Calendario de Turnos</Item>
+                <Item to="/turnos">📅 Turnos</Item>
                 <Item to="/especialidad">Especialidades</Item>
                 <Item to="/medico">Médicos</Item>
                 <Item to="/pacientes">Pacientes</Item>

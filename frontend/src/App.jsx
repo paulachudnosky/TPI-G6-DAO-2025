@@ -14,17 +14,17 @@ import HistorialClinicoList from './features/historial-clinico/pages/HistorialCl
 
 
 // Crud Consultas
-import ConsultaAtencion from './features/consulta/pages/ConsultaAtencion'; 
-import ConsultaList from './features/consulta/pages/ConsultaList'; 
-import ConsultaRegistro from './features/consulta/pages/ConsultaRegistro'; 
+import ConsultaAtencion from './features/consulta/pages/ConsultaAtencion';
+import ConsultaList from './features/consulta/pages/ConsultaList';
+import ConsultaRegistro from './features/consulta/pages/ConsultaRegistro';
 import ConsultaView from './features/consulta/pages/ConsultaView';
 
 
 import TipoConsultaList from './features/tipo-consulta/pages/TipoConsultaList';
 import TipoMedicamentoList from './features/tipo-medicamento/pages/TipoMedicamentoList';
-import TurnoList from './features/turno/pages/TurnoList';
 import CalendarioTurnos from './features/turno/pages/CalendarioTurnos';
 import TurnosDiaView from './features/turno/pages/TurnosDiaView';
+import TurnoCreate from './features/turno/pages/TurnoCreate';
 
 // CRUD horarios de atención
 import HorarioAtencionList from './features/horario-atencion/pages/HorarioAtencionList';
@@ -62,12 +62,12 @@ function App() {
 
           {/* Rutas Historial Clinico */}
           <Route path="/historial-clinico" element={<HistorialClinicoList />} />
-          
+
           <Route path="/consulta" element={<ConsultaAtencion />} />
           <Route path="/consulta/registrar" element={<ConsultaRegistro />} />
           <Route path="/consultas/historial" element={<ConsultaList />} />
           <Route path="/consulta/:id" element={<ConsultaView />} />
-          
+
           {/* Rutas CRUD Horario de Atención */}
 
           <Route path="/horario-atencion" element={<HorarioAtencionList />} />
@@ -92,9 +92,10 @@ function App() {
           <Route path="/tipo-medicamento" element={<TipoMedicamentoList />} />
 
           {/* Rutas de Turnos */}
-          <Route path="/turno" element={<TurnoList />} />
-          <Route path="/turnos" element={<TurnoList />} />
+          <Route path="/turno" element={<CalendarioTurnos />} />
+          <Route path="/turnos" element={<CalendarioTurnos />} />
           <Route path="/turnos/calendario" element={<CalendarioTurnos />} />
+          <Route path="/turnos/nuevo" element={<TurnoCreate />} />
           <Route path="/turnos/dia/:fecha" element={<TurnosDiaView />} />
 
           {/* Ruta de Estadísticas */}
