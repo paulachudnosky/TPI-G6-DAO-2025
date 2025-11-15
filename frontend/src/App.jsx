@@ -26,8 +26,6 @@ import ConsultaView from './features/consulta/pages/ConsultaView';
 
 
 import TipoConsultaList from './features/tipo-consulta/pages/TipoConsultaList';
-import TurnoList from './features/turno/pages/TurnoList';
-import TipoMedicamentoList from './features/tipo-medicamento/pages/TipoMedicamentoList';
 import CalendarioTurnos from './features/turno/pages/CalendarioTurnos';
 import TurnosDiaView from './features/turno/pages/TurnosDiaView';
 import TurnoCreate from './features/turno/pages/TurnoCreate';
