@@ -1,22 +1,36 @@
 import React, { useState, useEffect } from 'react';
-// Asumo que los estilos están en una ruta similar a 'especialidad.css'
-// Si no, puedes importar '../styles/especialidad.css' directamente
-// import '../styles/medicamento.css'; 
+import tipoMedicamentoService from '../../tipo-medicamento/services/tipoMedicamentoService';
 
 const MedicamentoForm = ({ initialData, onSubmit }) => {
     const [formData, setFormData] = useState({
         nombre: '',
         descripcion: '',
-        id_tipo_medicamento: '',
+        id_tipo_medicamento: '', // Campo para el <select>
         codigo_nacional: '',
         forma_farmaceutica: '',
         presentacion: ''
     });
 
-    // NOTA: Carga de Tipos de Medicamento (para el <select>)
-    // Aquí deberías cargar los tipos de medicamento (como hiciste en mi código anterior)
-    // const [tipos, setTipos] = useState([]);
-    // useEffect(() => { /* fetch tipos */ }, []);
+    const [tipos, setTipos] = useState([]);
+    const [loadingTipos, setLoadingTipos] = useState(true);
+    const [errorTipos, setErrorTipos] = useState(null);
+
+    useEffect(() => {
+        const loadTipos = async () => {
+            try {
+                // ¡CAMBIO CLAVE! Usamos tu servicio y el método .getAll()
+                const data = await tipoMedicamentoService.getAll();
+                setTipos(data);
+                setErrorTipos(null);
+            } catch (err) {
+                console.error("Error al cargar tipos de medicamento", err);
+                setErrorTipos("No se pudieron cargar los tipos");
+            } finally {
+                setLoadingTipos(false);
+            }
+        };
+        loadTipos();
+    }, []); 
 
     useEffect(() => {
         if (initialData) {
@@ -47,7 +61,7 @@ const MedicamentoForm = ({ initialData, onSubmit }) => {
     return (
         <form className="entity-form" onSubmit={handleSubmit}>
             
-            {/* Fila 1: Nombre y Código Nacional */}
+            {/* Fila 1: Nombre y Código Nacional  */}
             <div className="entity-form-row">
                 <div className="entity-form-group">
                     <label htmlFor="nombre" className="entity-form-label required">Nombre</label>
@@ -81,18 +95,29 @@ const MedicamentoForm = ({ initialData, onSubmit }) => {
             <div className="entity-form-row">
                 <div className="entity-form-group">
                     <label htmlFor="id_tipo_medicamento" className="entity-form-label required">Tipo Medicamento</label>
-                    {/* TODO: Cambiar por un <select> cuando tengas el servicio de tipos */}
-                    <input
-                        type="number" // Temporal. Idealmente un <select>
+                    
+                    <select
                         id="id_tipo_medicamento"
                         name="id_tipo_medicamento"
-                        className="entity-form-input"
+                        className="entity-form-input" 
                         value={formData.id_tipo_medicamento}
                         onChange={handleChange}
                         required
-                        placeholder="ID del Tipo (Ej: 1)"
-                    />
+                        disabled={loadingTipos} 
+                    >
+                        <option value="">
+                            {loadingTipos ? 'Cargando tipos...' : 'Seleccione un tipo'}
+                        </option>
+                        
+                        {tipos.map(tipo => (
+                            <option key={tipo.id_tipo_medicamento} value={tipo.id_tipo_medicamento}>
+                                {tipo.nombre}
+                            </option>
+                        ))}
+                    </select>
+                    {errorTipos && <span className="entity-form-error">{errorTipos}</span>}
                 </div>
+                
                 <div className="entity-form-group">
                     <label htmlFor="forma_farmaceutica" className="entity-form-label">Forma Farmacéutica</label>
                     <input
@@ -139,7 +164,7 @@ const MedicamentoForm = ({ initialData, onSubmit }) => {
             </div>
 
             <div className="entity-form-actions">
-                <button type="submit" className="btn-entity-primary">
+                <button type="submit" className="btn-entity-primary" disabled={loadingTipos}>
                     Guardar Medicamento
                 </button>
             </div>

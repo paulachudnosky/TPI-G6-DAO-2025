@@ -1,4 +1,3 @@
-// src/components/layout/Sidebar.jsx
 import React from 'react';
 import { Nav } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -11,7 +10,7 @@ import {
 
 const Sidebar = () => {
 
-    // Tu lista de enlaces COMPLETA, con íconos
+    // Lista de enlaces COMPLETA (fusionando tu lista vieja y la nueva)
     const adminLinks = [
         { to: "/turno", icon: <FaCalendarAlt />, text: "Turnos" },
         { to: "/especialidad", icon: <FaStethoscope />, text: "Especialidades" },
@@ -20,7 +19,7 @@ const Sidebar = () => {
         { to: "/medicamento", icon: <FaCapsules />, text: "Medicamentos" },
         { to: "/tipo-consulta", icon: <FaNotesMedical />, text: "Tipos de Consulta" },
         { to: "/consulta", icon: <FaNotesMedical />, text: "Consultas" },
-        { to: "/tipo-medicamento", icon: <FaPills />, text: "Tipos de Medicamento" },
+        // LÍNEA ELIMINADA: { to: "/tipo-medicamento", icon: <FaPills />, text: "Tipos de Medicamento" },
         { to: "/historial-clinico", icon: <FaNotesMedical />, text: "Historial Clínico" },
         { to: "/horario-atencion", icon: <FaClock />, text: "Horarios de Atención" },
         { to: "/estadisticas", icon: <FaChartBar />, text: "Estadísticas" }

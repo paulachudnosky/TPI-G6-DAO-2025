@@ -1,7 +1,5 @@
-// src/features/tipo-medicamento/services/tipoMedicamentoService.js
 import apiClient from '../../../services/apiClient';
 
-// Backend expone plural con underscore
 const BASE_URL = '/tipos_medicamento';
 
 const tipoMedicamentoService = {

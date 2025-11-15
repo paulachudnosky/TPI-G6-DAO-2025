@@ -10,7 +10,8 @@ from routes.especialidades_routes import especialidades_bp
 from routes.turnos_routes import turnos_bp
 from routes.horarios_routes import horarios_bp
 from routes.tipoconsulta_routes import tipos_consulta_bp
-from routes.tipomedicamento_routes import tipos_medicamento_bp
+# from routes.tipomedicamento_routes import tipos_medicamento_bp
+from routes.tipo_medicamento_routes import tipos_medicamento_bp
 from routes.medicamento_routes import medicamentos_bp
 from routes.consultas_routes import consultas_bp
 from routes.estadisticas_routes import estadisticas_bp
