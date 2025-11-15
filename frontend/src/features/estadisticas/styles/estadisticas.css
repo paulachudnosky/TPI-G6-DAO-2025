@@ -121,6 +121,40 @@
     font-weight: 600;
 }
 
+/* --- Estilos para filtros rápidos con botones --- */
+.report-filters-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--entity-border);
+}
+
+.btn-filter {
+    background-color: #f0f2f5;
+    border: 1px solid var(--entity-border);
+    color: var(--entity-text-muted);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-filter:hover {
+    background-color: #e4e6e9;
+    border-color: #cdd2d8;
+}
+
+.btn-filter.active {
+    background-color: var(--entity-primary);
+    color: white;
+    border-color: var(--entity-primary);
+    font-weight: 600;
+}
+
 /* --- Contenedor Principal de la Vista del Reporte --- */
 .report-view-container {
     margin-top: var(--entity-spacing-lg);

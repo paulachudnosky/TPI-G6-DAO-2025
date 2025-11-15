@@ -298,25 +298,45 @@ def contar_turnos_por_estado(fecha_inicio=None, fecha_fin=None):
         if conn:
             conn.close()
 
-def contar_turnos_por_especialidad():
+def contar_turnos_por_especialidad(fecha_inicio=None, fecha_fin=None):
     """
     Cuenta la cantidad de turnos agrupados por especialidad.
+    Opcionalmente filtra por un rango de fechas.
     Retorna una lista de diccionarios con el nombre de la especialidad y la cantidad.
     """
     conn = None
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("""
+
+        # Base de la consulta
+        query = """
             SELECT 
                 e.nombre AS especialidad_nombre,
                 COUNT(t.id_turno) AS cantidad
             FROM Turno t
             JOIN Medico m ON t.id_medico = m.id_medico
             JOIN Especialidad e ON m.id_especialidad = e.id_especialidad
-            GROUP BY e.id_especialidad, e.nombre
-            ORDER BY cantidad DESC
-        """)
+        """
+        
+        # Construcción dinámica de la cláusula WHERE
+        where_clauses = []
+        params = []
+
+        if fecha_inicio:
+            where_clauses.append("DATE(t.fecha_hora_inicio) >= ?")
+            params.append(fecha_inicio)
+        
+        if fecha_fin:
+            where_clauses.append("DATE(t.fecha_hora_inicio) <= ?")
+            params.append(fecha_fin)
+
+        if where_clauses:
+            query += " WHERE " + " AND ".join(where_clauses)
+
+        query += " GROUP BY e.id_especialidad, e.nombre ORDER BY cantidad DESC"
+        
+        cursor.execute(query, tuple(params))
         
         rows = cursor.fetchall()
         resultado = []

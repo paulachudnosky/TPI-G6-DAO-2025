@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { obtenerTurnosPorDia, actualizarEstadoTurno, eliminarTurno, actualizarTurnosVencidos } from '../services/turnoService';
+import { getPacientes } from '../../paciente/services/pacienteService';
+import { getMedicos } from '../../medico/services/medicoService';
 import '../styles/turnos-dia.css';
 
 const TurnosDiaView = () => {
@@ -9,6 +11,8 @@ const TurnosDiaView = () => {
     const [turnos, setTurnos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [pacientesMap, setPacientesMap] = useState({});
+    const [medicosMap, setMedicosMap] = useState({});
 
     useEffect(() => {
         // Actualizar turnos vencidos antes de cargar los del día
@@ -20,8 +24,31 @@ const TurnosDiaView = () => {
         setLoading(true);
         setError(null);
         try {
-            const data = await obtenerTurnosPorDia(fecha);
-            setTurnos(data);
+            // Cargar en paralelo los turnos, pacientes y médicos
+            const [turnosData, pacientesData, medicosData] = await Promise.all([
+                obtenerTurnosPorDia(fecha),
+                getPacientes(),
+                getMedicos()
+            ]);
+
+            // Crear mapas para búsqueda rápida (más eficiente que usar .find() en un loop)
+            const pMap = pacientesData.reduce((map, pac) => {
+                map[pac.id_paciente] = pac;
+                return map;
+            }, {});
+            const mMap = medicosData.reduce((map, med) => {
+                map[med.id_medico] = med;
+                return map;
+            }, {});
+
+            // Enriquecer cada turno con la información del paciente y médico
+            const turnosEnriquecidos = turnosData.map(turno => ({
+                ...turno,
+                paciente: pMap[turno.id_paciente],
+                medico: mMap[turno.id_medico]
+            }));
+
+            setTurnos(turnosEnriquecidos);
         } catch (err) {
             setError('Error al cargar los turnos del día.');
             console.error(err);
@@ -98,10 +125,6 @@ const TurnosDiaView = () => {
         navigate(`/turnos/${idTurno}`);
     };
 
-    const handleEditar = (idTurno) => {
-        navigate(`/turnos/editar/${idTurno}`);
-    };
-
     const esHoy = () => {
         const hoy = new Date().toISOString().split('T')[0];
         return fecha === hoy;
@@ -129,6 +152,7 @@ const TurnosDiaView = () => {
                     <button
                         className="btn-entity-secondary"
                         onClick={() => navigate('/turnos')}
+                        style={{ marginLeft: '0.5rem' }}
                     >
                         📅 Ver Calendario
                     </button>
@@ -194,14 +218,14 @@ const TurnosDiaView = () => {
                             <div className="turno-info">
                                 <div className="turno-paciente">
                                     <strong>👤 Paciente:</strong>{' '}
-                                    {turno.paciente.nombre} {turno.paciente.apellido}
-                                    {turno.paciente.dni && (
+                                    {turno.paciente?.nombre} {turno.paciente?.apellido}
+                                    {turno.paciente?.dni && (
                                         <span className="turno-dni"> (DNI: {turno.paciente.dni})</span>
                                     )}
                                 </div>
                                 <div className="turno-medico">
                                     <strong>👨‍⚕️ Médico:</strong>{' '}
-                                    Dr/a. {turno.medico.nombre} {turno.medico.apellido}
+                                    Dr/a. {turno.medico?.nombre} {turno.medico?.apellido}
                                 </div>
                                 {turno.especialidad_nombre && (
                                     <div className="turno-especialidad">
@@ -234,14 +258,6 @@ const TurnosDiaView = () => {
 
                                 {turno.estado === 'Programado' && (
                                     <>
-                                        <button
-                                            className="btn-accion btn-editar"
-                                            onClick={() => handleEditar(turno.id_turno)}
-                                            title="Editar turno"
-                                        >
-                                            ✏️
-                                        </button>
-
                                         {esHoy() && (
                                             <button
                                                 className="btn-accion btn-consulta"

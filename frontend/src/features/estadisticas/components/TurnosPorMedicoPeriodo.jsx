@@ -29,7 +29,16 @@ const TurnosPorMedicoPeriodo = () => {
 
     const handleSearch = async () => {
         if (!filters.fecha_inicio) {
-            alert('La fecha de inicio es obligatoria.');
+            setError('La fecha de inicio es obligatoria.');
+            return;
+        }
+
+        // Si la fecha "Hasta" está vacía, usamos la fecha actual para la validación.
+        const fechaFinValidacion = filters.fecha_fin || new Date().toISOString().split('T')[0];
+
+        if (filters.fecha_inicio > fechaFinValidacion) {
+            setError('La fecha "Desde" no puede ser posterior a la fecha "Hasta". Si "Hasta" está vacío, se compara con la fecha de hoy.');
+            setTurnos([]); // Limpiamos resultados anteriores si los hay
             return;
         }
         try {
@@ -69,7 +78,9 @@ const TurnosPorMedicoPeriodo = () => {
                     <input type="date" name="fecha_inicio" value={filters.fecha_inicio} onChange={handleChange} className="entity-form-input" required />
                 </div>
                 <div className="entity-form-group">
-                    <label className="entity-form-label">Hasta</label>
+                    <label className="entity-form-label">
+                        Hasta <span className="entity-text-muted" style={{ fontWeight: 'normal', fontSize: '0.8em' }}>(por defecto: hoy)</span>
+                    </label>
                     <input type="date" name="fecha_fin" value={filters.fecha_fin} onChange={handleChange} className="entity-form-input" />
                 </div>
                 <div className="entity-form-group">

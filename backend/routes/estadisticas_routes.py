@@ -8,10 +8,14 @@ estadisticas_bp = Blueprint('estadisticas_routes', __name__, url_prefix='/turnos
 def get_turnos_por_especialidad():
     """
     Endpoint para obtener la cantidad de turnos por especialidad.
-    Llama a la función: contar_turnos_por_especialidad()
+    Acepta parámetros opcionales 'fecha_inicio' y 'fecha_fin'.
+    Llama a la función: contar_turnos_por_especialidad(fecha_inicio, fecha_fin)
     """
+    # Obtenemos los parámetros de la URL, si no existen serán None
+    fecha_inicio = request.args.get('fecha_inicio')
+    fecha_fin = request.args.get('fecha_fin')
     try:
-        resultado = turno_dao.contar_turnos_por_especialidad()
+        resultado = turno_dao.contar_turnos_por_especialidad(fecha_inicio, fecha_fin)
         return jsonify(resultado)
     except Exception as e:
         return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500

@@ -14,7 +14,6 @@ const Sidebar = () => {
     // Tu lista de enlaces COMPLETA, con íconos
     const adminLinks = [
         { to: "/turno", icon: <FaCalendarAlt />, text: "Turnos" },
-        { to: "/turnos/calendario", icon: <FaCalendarAlt />, text: "Calendario de Turnos" },
         { to: "/especialidad", icon: <FaStethoscope />, text: "Especialidades" },
         { to: "/medico", icon: <FaUserMd />, text: "Médicos" },
         { to: "/pacientes", icon: <FaUserInjured />, text: "Pacientes" },

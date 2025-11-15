@@ -30,6 +30,7 @@ import TipoMedicamentoList from './features/tipo-medicamento/pages/TipoMedicamen
 import CalendarioTurnos from './features/turno/pages/CalendarioTurnos';
 import TurnosDiaView from './features/turno/pages/TurnosDiaView';
 import TurnoCreate from './features/turno/pages/TurnoCreate';
+import TurnoDetalleView from './features/turno/pages/TurnoDetalleView';
 
 // CRUD horarios de atención
 import HorarioAtencionList from './features/horario-atencion/pages/HorarioAtencionList';
@@ -106,6 +107,7 @@ function App() {
           <Route path="/turnos/calendario" element={<CalendarioTurnos />} />
           <Route path="/turnos/nuevo" element={<TurnoCreate />} />
           <Route path="/turnos/dia/:fecha" element={<TurnosDiaView />} />
+          <Route path="/turnos/:id" element={<TurnoDetalleView />} />
 
           {/* Ruta de Estadísticas */}
           <Route path="/estadisticas" element={<EstadisticasPage />} />
