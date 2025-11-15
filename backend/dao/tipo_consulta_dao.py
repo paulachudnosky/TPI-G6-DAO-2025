@@ -31,8 +31,10 @@ def obtener_tipos_consulta():
         tipos_consulta = []
         for row in rows:
             tipo = TipoConsulta(
-                id_tipo=row[0], nombre=row[1], 
-                descripcion=row[2], duracion_minutos=row[3]
+                nombre=row[1], 
+                descripcion=row[2], 
+                duracion_minutos=row[3],
+                id_tipo_consulta=row[0]
             )
             tipos_consulta.append(tipo.to_dict())
         return tipos_consulta
@@ -54,8 +56,10 @@ def obtener_tipo_consulta_por_id(id_tipo):
         
         if row:
             tipo = TipoConsulta(
-                id_tipo=row[0], nombre=row[1], 
-                descripcion=row[2], duracion_minutos=row[3]
+                nombre=row[1], 
+                descripcion=row[2], 
+                duracion_minutos=row[3],
+                id_tipo_consulta=row[0]
             )
             return tipo.to_dict()
         return None

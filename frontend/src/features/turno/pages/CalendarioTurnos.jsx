@@ -109,8 +109,14 @@ const CalendarioTurnos = () => {
 
     return (
         <div className="entity-container calendario-container">
-            <div className="entity-header">
+            <div className="entity-header" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
                 <h2>📅 Calendario de Turnos</h2>
+                <button
+                    className="btn-entity-primary"
+                    onClick={() => navigate('/turnos/nuevo')}
+                >
+                    ➕ Nuevo Turno
+                </button>
             </div>
 
             {error && (
@@ -189,16 +195,6 @@ const CalendarioTurnos = () => {
                     <div className="leyenda-cuadro leyenda-sin-turnos"></div>
                     <span>Sin turnos</span>
                 </div>
-            </div>
-
-            {/* Botón para volver */}
-            <div className="entity-actions" style={{ marginTop: '1.5rem' }}>
-                <button
-                    className="btn-entity-secondary"
-                    onClick={() => navigate('/turnos')}
-                >
-                    ← Volver a Lista de Turnos
-                </button>
             </div>
         </div>
     );

@@ -298,25 +298,45 @@ def contar_turnos_por_estado(fecha_inicio=None, fecha_fin=None):
         if conn:
             conn.close()
 
-def contar_turnos_por_especialidad():
+def contar_turnos_por_especialidad(fecha_inicio=None, fecha_fin=None):
     """
     Cuenta la cantidad de turnos agrupados por especialidad.
+    Opcionalmente filtra por un rango de fechas.
     Retorna una lista de diccionarios con el nombre de la especialidad y la cantidad.
     """
     conn = None
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("""
+
+        # Base de la consulta
+        query = """
             SELECT 
                 e.nombre AS especialidad_nombre,
                 COUNT(t.id_turno) AS cantidad
             FROM Turno t
             JOIN Medico m ON t.id_medico = m.id_medico
             JOIN Especialidad e ON m.id_especialidad = e.id_especialidad
-            GROUP BY e.id_especialidad, e.nombre
-            ORDER BY cantidad DESC
-        """)
+        """
+        
+        # Construcción dinámica de la cláusula WHERE
+        where_clauses = []
+        params = []
+
+        if fecha_inicio:
+            where_clauses.append("DATE(t.fecha_hora_inicio) >= ?")
+            params.append(fecha_inicio)
+        
+        if fecha_fin:
+            where_clauses.append("DATE(t.fecha_hora_inicio) <= ?")
+            params.append(fecha_fin)
+
+        if where_clauses:
+            query += " WHERE " + " AND ".join(where_clauses)
+
+        query += " GROUP BY e.id_especialidad, e.nombre ORDER BY cantidad DESC"
+        
+        cursor.execute(query, tuple(params))
         
         rows = cursor.fetchall()
         resultado = []
@@ -384,12 +404,13 @@ def obtener_turnos_por_dia_y_medico(id_medico, fecha_str):
             conn.close()
 
 def obtener_turnos_por_dia(fecha_str):
-    """Obtiene todos los turnos para un día específico para todos los médicos."""
+    """Obtiene todos los turnos para un día específico para todos los médicos, con datos aplanados."""
     conn = None
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
         # Usamos la función DATE() de SQLite para comparar solo la parte de la fecha
+        # y devolvemos los campos que el frontend espera (ej: paciente_nombre)
         cursor.execute(
             """SELECT t.id_turno, t.fecha_hora_inicio, t.fecha_hora_fin, t.estado,
                       p.id_paciente, p.nombre AS paciente_nombre, p.apellido AS paciente_apellido,
@@ -404,36 +425,7 @@ def obtener_turnos_por_dia(fecha_str):
             (fecha_str,)
         )
         rows = cursor.fetchall()
-        # Reutilizamos la lógica de `obtener_turnos_por_periodo` para mapear los resultados
-        return [dict(zip([column[0] for column in cursor.description], row)) for row in rows]
-    except sqlite3.Error as e:
-        print(f"Error al obtener turnos por día: {e}")
-        return []
-    finally:
-        if conn:
-            conn.close()
-
-def obtener_turnos_por_dia(fecha_str):
-    """Obtiene todos los turnos para un día específico para todos los médicos."""
-    conn = None
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        # Usamos la función DATE() de SQLite para comparar solo la parte de la fecha
-        cursor.execute(
-            """SELECT t.id_turno, t.fecha_hora_inicio, t.fecha_hora_fin, t.estado,
-                      p.id_paciente, p.nombre AS paciente_nombre, p.apellido AS paciente_apellido,
-                      m.id_medico, m.nombre AS medico_nombre, m.apellido AS medico_apellido,
-                      tc.id_tipo, tc.nombre AS tipo_consulta_nombre
-               FROM Turno t
-               JOIN Paciente p ON t.id_paciente = p.id_paciente
-               JOIN Medico m ON t.id_medico = m.id_medico
-               JOIN TipoConsulta tc ON t.id_tipo_consulta = tc.id_tipo
-               WHERE DATE(t.fecha_hora_inicio) = ?
-               ORDER BY t.fecha_hora_inicio ASC""",
-            (fecha_str,)
-        )
-        rows = cursor.fetchall()
+        # Convertimos cada fila en un diccionario para que sea un JSON válido
         return [dict(zip([column[0] for column in cursor.description], row)) for row in rows]
     except sqlite3.Error as e:
         print(f"Error al obtener turnos por día: {e}")
@@ -541,71 +533,6 @@ def obtener_turno_por_id(id_turno):
     except sqlite3.Error as e:
         print(f"Error al obtener turno por ID: {e}")
         return None
-    finally:
-        if conn:
-            conn.close()
-
-
-def obtener_turnos_por_dia(fecha):
-    """
-    Obtiene todos los turnos de un día específico (sin filtro de médico).
-    Incluye información completa del paciente, médico y tipo de consulta.
-    
-    Args:
-        fecha: String en formato 'YYYY-MM-DD'
-    
-    Returns:
-        Lista de turnos con información detallada
-    """
-    conn = None
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("""
-            SELECT 
-                t.id_turno, t.fecha_hora_inicio, t.fecha_hora_fin, t.estado,
-                p.id_paciente, p.nombre AS paciente_nombre, p.apellido AS paciente_apellido,
-                p.dni AS paciente_dni,
-                m.id_medico, m.nombre AS medico_nombre, m.apellido AS medico_apellido,
-                e.nombre AS especialidad_nombre,
-                tc.nombre AS tipo_consulta_nombre
-            FROM Turno t
-            JOIN Paciente p ON t.id_paciente = p.id_paciente
-            JOIN Medico m ON t.id_medico = m.id_medico
-            LEFT JOIN Especialidad e ON m.id_especialidad = e.id_especialidad
-            LEFT JOIN TipoConsulta tc ON t.id_tipo_consulta = tc.id_tipo
-            WHERE DATE(t.fecha_hora_inicio) = ?
-            ORDER BY t.fecha_hora_inicio ASC
-        """, (fecha,))
-        
-        rows = cursor.fetchall()
-        turnos = []
-        for row in rows:
-            turno = {
-                "id_turno": row[0],
-                "fecha_hora_inicio": row[1],
-                "fecha_hora_fin": row[2],
-                "estado": row[3],
-                "paciente": {
-                    "id_paciente": row[4],
-                    "nombre": row[5],
-                    "apellido": row[6],
-                    "dni": row[7]
-                },
-                "medico": {
-                    "id_medico": row[8],
-                    "nombre": row[9],
-                    "apellido": row[10]
-                },
-                "especialidad_nombre": row[11],
-                "tipo_consulta_nombre": row[12]
-            }
-            turnos.append(turno)
-        return turnos
-        
-    except sqlite3.Error as e:
-        print(f"Error al obtener turnos por día: {e}")
-        return []
     finally:
         if conn:
             conn.close()

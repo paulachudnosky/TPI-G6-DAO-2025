@@ -107,6 +107,21 @@ export const obtenerTurnosVencidos = async () => {
     return response.data;
 };
 
+/**
+ * Obtiene un listado de turnos filtrado por un período y opcionalmente por médico.
+ * Utilizado en los reportes de estadísticas.
+ * @param {string} fecha_inicio - Fecha de inicio en formato 'YYYY-MM-DD'
+ * @param {string} fecha_fin - Fecha de fin en formato 'YYYY-MM-DD'
+ * @param {number|null} id_medico - ID del médico (opcional)
+ */
+export const getTurnosPorPeriodo = async (fecha_inicio, fecha_fin, id_medico) => {
+    const response = await apiClient.get('/turnos/estadisticas/por_medico_periodo', {
+        params: { fecha_inicio, fecha_fin, id_medico }
+    });
+    return response.data;
+};
+
+
 // Export nombrado esperado por TurnoList.jsx
 export const fetchTurnos = getTurnos;
 

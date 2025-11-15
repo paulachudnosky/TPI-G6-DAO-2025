@@ -108,6 +108,10 @@
     background-color: var(--entity-warning); /* Naranja/Amarillo */
 }
 
+.status-asistido {
+    background-color: var(--entity-success, #198754); /* Verde para éxito */
+}
+
 /* Centrar los encabezados de la tabla de atención */
 .entity-table thead th {
     text-align: center;

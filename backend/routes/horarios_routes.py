@@ -1,6 +1,5 @@
 from flask import Blueprint, jsonify, request
 from dao import horario_atencion_dao
-from flask_cors import cross_origin 
 
 horarios_bp = Blueprint('horarios_routes', __name__, url_prefix='/horarios')
 
@@ -12,7 +11,6 @@ def get_horarios_por_medico(id_medico):
     return jsonify({"error": "No se encontraron horarios para el médico"}), 404
 
 @horarios_bp.route('/<int:id_horario>', methods=['GET'])
-@cross_origin()
 def get_horario_by_id(id_horario):
     horario = horario_atencion_dao.obtener_horario_por_id(id_horario)
     if horario:

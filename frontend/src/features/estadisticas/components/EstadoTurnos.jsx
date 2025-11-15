@@ -17,6 +17,16 @@ const EstadoTurnos = () => {
     };
 
     const handleSearch = async () => {
+        // Si la fecha "Hasta" está vacía, usamos la fecha actual para la validación.
+        const fechaFinValidacion = fechas.fecha_fin || new Date().toISOString().split('T')[0];
+
+        // Validamos solo si hay una fecha de inicio
+        if (fechas.fecha_inicio && fechas.fecha_inicio > fechaFinValidacion) {
+            setError('La fecha "Desde" no puede ser posterior a la fecha "Hasta". Si "Hasta" está vacío, se compara con la fecha de hoy.');
+            setData(null); // Limpiamos resultados anteriores si los hay
+            return;
+        }
+
         try {
             setLoading(true);
             setError(null);
@@ -82,32 +92,40 @@ const EstadoTurnos = () => {
     };
 
     return (
-        <div className="stat-card">
-            <h4 className="stat-card-title">Gráfico de Asistencia de Turnos</h4>
-            <div className="stat-filters">
+        <div className="report-layout">
+            {/* Columna de Filtros (Izquierda) */}
+            <div className="report-filters">
+                <h3 className="report-section-title">Filtros</h3>
                 <div className="entity-form-group">
                     <label className="entity-form-label">Desde</label>
                     <input type="date" name="fecha_inicio" value={fechas.fecha_inicio} onChange={handleChange} className="entity-form-input" />
                 </div>
                 <div className="entity-form-group">
-                    <label className="entity-form-label">Hasta</label>
+                    <label className="entity-form-label">
+                        Hasta <span className="entity-text-muted" style={{ fontWeight: 'normal', fontSize: '0.8em' }}>(por defecto: hoy)</span>
+                    </label>
                     <input type="date" name="fecha_fin" value={fechas.fecha_fin} onChange={handleChange} className="entity-form-input" />
                 </div>
                 <button onClick={handleSearch} disabled={loading} className="btn-entity-primary">
-                    {loading ? 'Buscando...' : 'Buscar'}
+                    {loading ? 'Buscando...' : 'Generar Gráfico'}
                 </button>
             </div>
 
-            {error && <div className="entity-alert entity-alert-danger" style={{ marginTop: '1rem' }}>{error}</div>}
-
-            {data && (
-                <div className="chart-and-legend-container">
+            {/* Columna de Resultados (Derecha) */}
+            <div className="report-results">
+                <h3 className="report-section-title">Gráfico de Asistencia</h3>
+                {error && <div className="entity-alert entity-alert-danger">{error}</div>}
+                
+                {loading ? (
+                    <div className="entity-loading">Cargando...</div>
+                ) : data ? (
                     <div className="chart-wrapper-large">
                         <Pie data={chartData} options={chartOptions} />
                     </div>
-                </div>
-            )}
-            {!data && !loading && <p className="entity-text-muted" style={{ marginTop: '1rem' }}>Seleccione un rango de fechas y haga clic en "Buscar".</p>}
+                ) : (
+                    <div className="empty-state">Seleccione un rango de fechas (opcional) y haga clic en "Generar Gráfico".</div>
+                )}
+            </div>
         </div>
     );
 };

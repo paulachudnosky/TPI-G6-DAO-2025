@@ -3,11 +3,11 @@
 
 /* Sobrescribir variables de color para Estadísticas */
 :root {
-    --entity-primary: #6f42c1; /* Púrpura */
-    --entity-primary-hover: #59369a;
-    --entity-primary-light: #e2d9f3;
+    --entity-primary: #0d6efd; /* Azul estándar para un look más corporativo */
+    --entity-primary-hover: #0b5ed7;
+    --entity-primary-light: #cfe2ff;
 }
-
+/*
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -75,46 +75,141 @@
     font-weight: 700;
     color: var(--entity-primary);
     display: block;
-}
+*/
 
+/* --- Menú de Selección de Reportes --- */
 .report-menu {
     margin-bottom: 2rem;
-    padding: 1rem;
-    background-color: var(--entity-bg-light);
-    border-radius: var(--entity-radius);
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
+    gap: 10px;
     align-items: center;
+    border-bottom: 1px solid var(--entity-border);
+    padding-bottom: 1rem;
 }
 
 .report-menu p {
     margin: 0;
-    margin-right: 1rem;
+    margin-right: 10px;
     font-weight: 500;
+    color: var(--entity-text-muted);
 }
 
 .btn-report-menu {
     background-color: #fff;
     border: 1px solid var(--entity-border);
     color: var(--entity-text);
-    padding: 0.5rem 1rem;
+    padding: 8px 16px;
     border-radius: var(--entity-radius);
     cursor: pointer;
     transition: all 0.2s ease-in-out;
+    font-weight: 500;
 }
 
-.btn-report-menu.active,
+/* Estado hover para los botones del menú */
 .btn-report-menu:hover {
+    background-color: var(--entity-bg-light);
+    border-color: var(--entity-primary);
+    color: var(--entity-primary);
+}
+
+/* Estado activo para el botón seleccionado */
+.btn-report-menu.active {
     background-color: var(--entity-primary);
     color: white;
     border-color: var(--entity-primary);
+    font-weight: 600;
 }
 
-.report-content {
-    margin-top: 1.5rem;
+/* --- Estilos para filtros rápidos con botones --- */
+.report-filters-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--entity-border);
 }
 
+.btn-filter {
+    background-color: #f0f2f5;
+    border: 1px solid var(--entity-border);
+    color: var(--entity-text-muted);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-filter:hover {
+    background-color: #e4e6e9;
+    border-color: #cdd2d8;
+}
+
+.btn-filter.active {
+    background-color: var(--entity-primary);
+    color: white;
+    border-color: var(--entity-primary);
+    font-weight: 600;
+}
+
+/* --- Contenedor Principal de la Vista del Reporte --- */
+.report-view-container {
+    margin-top: var(--entity-spacing-lg);
+    min-height: 400px; /* Altura mínima para que se vea bien */
+}
+
+/* Estado vacío cuando no se ha seleccionado ningún reporte */
+.report-empty-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    min-height: 350px;
+    color: var(--entity-text-muted);
+    font-size: 1.1rem;
+}
+
+/* --- Layout de Dos Columnas --- */
+.report-layout {
+    display: flex;
+    gap: var(--entity-spacing-xl);
+}
+
+/* Columna izquierda para los filtros */
+.report-filters {
+    flex: 0 0 300px; /* Ancho fijo, no crece ni se encoge */
+    background-color: var(--entity-bg-light);
+    padding: var(--entity-spacing-md);
+    border-radius: var(--entity-radius);
+    border: 1px solid var(--entity-border); 
+    /* Eliminamos align-self: flex-start para que la columna se estire */
+}
+
+/* Columna derecha para los resultados */
+.report-results {
+    flex: 1; /* Ocupa el espacio restante */
+    min-width: 0; /* Importante para que el contenido interno no desborde */
+    /* Añadimos estilos de tarjeta para consistencia visual */
+    background-color: var(--entity-bg-light);
+    padding: var(--entity-spacing-md);
+    border-radius: var(--entity-radius);
+    border: 1px solid var(--entity-border);
+}
+
+/* --- Títulos de Sección --- */
+.report-section-title {
+    margin-top: 0;
+    margin-bottom: var(--entity-spacing-md);
+    font-size: 1.2rem;
+    color: var(--entity-primary);
+    border-bottom: 2px solid var(--entity-primary-light);
+    padding-bottom: var(--entity-spacing-sm);
+}
+
+/* --- Estilos para Gráficos --- */
 .chart-and-legend-container {
     align-items: center;
     justify-content: center;
@@ -131,4 +226,126 @@
     width: 450px;
     max-width: 100%;
     margin: 0 auto; /* Centrar el gráfico */
+}
+
+/* --- Lista de Estadísticas (Alternativa a gráficos) --- */
+.stats-list {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--entity-spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--entity-spacing-sm);
+}
+
+.stats-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--entity-spacing-md);
+    background-color: var(--entity-bg-light);
+    border-radius: var(--entity-radius);
+    border-left: 5px solid var(--entity-primary); /* Borde izquierdo de color */
+}
+
+.stats-list-label {
+    font-weight: 500;
+    color: var(--entity-text);
+}
+
+.stats-list-value {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--entity-primary);
+    background-color: var(--entity-primary-light);
+    padding: 0.25rem 0.75rem;
+    border-radius: 99px; /* Píldora */
+}
+.chart-wrapper-large {
+    position: relative;
+    /* Corrección final: Establecer un tamaño fijo grande y usar max-width para hacerlo responsive */
+    height: 450px;
+    width: 450px;
+    max-width: 100%;
+    margin: 0 auto; /* Centrar el gráfico */
+}
+
+/* --- Tarjeta para mostrar un resultado único (Stat Card) --- */
+.stat-result-card {
+    background-color: var(--entity-bg-light);
+    border: 1px solid var(--entity-border);
+    border-radius: var(--entity-radius);
+    padding: var(--entity-spacing-lg) var(--entity-spacing-xl);
+    text-align: center;
+    margin-top: var(--entity-spacing-md);
+    max-width: 500px; /* Para que no se estire demasiado en pantallas anchas */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.stat-result-label {
+    font-size: 1.1rem;
+    color: var(--entity-text-muted);
+    margin-bottom: var(--entity-spacing-md);
+}
+
+.stat-result-number {
+    font-size: 4rem;
+    font-weight: 700;
+    color: var(--entity-primary);
+    display: block;
+}
+
+/* --- Paginación --- */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--entity-spacing-md);
+    margin-top: var(--entity-spacing-lg);
+}
+
+.btn-pagination {
+    background-color: white;
+    border: 1px solid var(--entity-border);
+    color: var(--entity-primary);
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--entity-radius);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-pagination:hover:not(:disabled) {
+    background-color: var(--entity-primary);
+    color: white;
+}
+
+.btn-pagination:disabled {
+    background-color: var(--entity-bg-light);
+    color: var(--entity-text-muted);
+    cursor: not-allowed;
+    border-color: var(--entity-border);
+}
+
+.pagination-info {
+    color: var(--entity-text-muted);
+    font-weight: 500;
+}
+.chart-wrapper-large {
+    position: relative;
+    /* Corrección final: Establecer un tamaño fijo grande y usar max-width para hacerlo responsive */
+    height: 450px;
+    width: 450px;
+    max-width: 100%;
+    margin: 0 auto; /* Centrar el gráfico */
+}
+
+/* --- Estilo para el botón de acción principal en los filtros --- */
+.report-filters .btn-entity-primary {
+    width: 100%; /* El botón ocupa todo el ancho de la columna de filtros */
+    margin-top: var(--entity-spacing-md); /* Añade un espacio superior para separarlo del último filtro */
+    padding-top: 0.75rem; /* Hacemos el botón un poco más alto */
+    padding-bottom: 0.75rem;
+    font-size: 1.05rem; /* Hacemos el texto un poco más grande */
 }

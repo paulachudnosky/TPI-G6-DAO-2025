@@ -9,7 +9,13 @@ const ConsultaAtencion = () => {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
-    const hoy = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    // Corregido: Crear la fecha en formato YYYY-MM-DD usando la zona horaria local
+    // para evitar el problema de que .toISOString() pueda devolver el día anterior.
+    const getTodayLocal = () => {
+        const hoyDate = new Date();
+        return new Date(hoyDate.getTime() - (hoyDate.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+    };
+    const hoy = getTodayLocal();
 
     const cargarTurnos = useCallback(async () => {
         setLoading(true);
@@ -68,7 +74,7 @@ const ConsultaAtencion = () => {
     return (
         <div className="entity-container">
             <div className="entity-header">
-                <h2>Atención de Consultas - Hoy ({new Date(hoy).toLocaleDateString('es-AR')})</h2>
+                <h2>Atención de Consultas - Hoy ({new Date().toLocaleDateString('es-AR')})</h2>
                 <button
                     className="btn-entity-secondary"
                     onClick={() => navigate('/consultas/historial')}

@@ -7,8 +7,8 @@ const BASE_URL = '/turnos/estadisticas';
  * Obtiene la cantidad de turnos agrupados por especialidad.
  * Llama a la función: contar_turnos_por_especialidad()
  */
-export const getTurnosPorEspecialidad = async () => {
-    const response = await apiClient.get(`${BASE_URL}/por_especialidad`);
+export const getTurnosPorEspecialidad = async (params) => {
+    const response = await apiClient.get(`${BASE_URL}/por_especialidad`, { params });
     return response.data;
 };
 
