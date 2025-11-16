@@ -19,39 +19,63 @@ def poblar_base_de_datos():
             ('Cardiología', 'Diagnóstico y tratamiento de enfermedades cardiovasculares.'),
             ('Dermatología', 'Tratamiento de enfermedades de la piel.'),
             ('Pediatría', 'Atención médica de bebés, niños y adolescentes.'),
-            ('Traumatología', 'Tratamiento de lesiones del aparato locomotor.')
+            ('Traumatología', 'Tratamiento de lesiones del aparato locomotor.'),
+            ('Ginecología', 'Salud del sistema reproductor femenino.'),
+            ('Oftalmología', 'Salud de los ojos.'),
+            ('Urología', 'Salud del sistema urinario y reproductor masculino.'),
+            ('Neurología', 'Trastornos del sistema nervioso.')
         ]
-        cursor.executemany("INSERT OR IGNORE INTO Especialidad (nombre, descripcion) VALUES (?, ?)", especialidades)
+        cursor.executemany("INSERT OR IGNORE INTO Especialidad (nombre, descripcion, activo) VALUES (?, ?, 1)", especialidades)
 
         # --- 2. Poblar Médicos ---
         medicos = [
-            ('Ana', 'García', 'MP-9876', 'ana.garcia@clinic.com', 1),
-            ('Carlos', 'Lopez', 'MP-5432', 'carlos.lopez@clinic.com', 2),
-            ('Laura', 'Martinez', 'MP-1122', 'laura.martinez@clinic.com', 3),
-            ('Roberto', 'Sanchez', 'MP-3344', 'roberto.sanchez@clinic.com', 4)
+            # 4 existentes
+            ('Ana', 'García', 'MP-9876', 'ana.garcia@clinic.com', 1, True),
+            ('Carlos', 'Lopez', 'MP-5432', 'carlos.lopez@clinic.com', 2, True),
+            ('Laura', 'Martinez', 'MP-1122', 'laura.martinez@clinic.com', 3, True),
+            ('Roberto', 'Sanchez', 'MP-3344', 'roberto.sanchez@clinic.com', 4, True),
+            # 11 nuevos
+            ('Martín', 'Fierro', 'MP-2468', 'martin.fierro@clinic.com', 5, True),
+            ('Elena', 'Rodriguez', 'MP-1357', 'elena.rodriguez@clinic.com', 5, True),
+            ('Jorge', 'Borges', 'MP-9753', 'jorge.borges@clinic.com', 6, True),
+            ('Victoria', 'Ocampo', 'MP-8642', 'victoria.ocampo@clinic.com', 6, True),
+            ('Julio', 'Cortazar', 'MP-1234', 'julio.cortazar@clinic.com', 7, True),
+            ('Silvina', 'Bullrich', 'MP-5678', 'silvina.bullrich@clinic.com', 7, True),
+            ('Adolfo', 'Casares', 'MP-4321', 'adolfo.casares@clinic.com', 8, True),
+            ('Alejandra', 'Pizarnik', 'MP-8765', 'alejandra.pizarnik@clinic.com', 8, True),
+            ('Ernesto', 'Sabato', 'MP-1011', 'ernesto.sabato@clinic.com', 1, True),
+            ('Alfonsina', 'Storni', 'MP-1213', 'alfonsina.storni@clinic.com', 2, True),
+            ('Leopoldo', 'Lugones', 'MP-1415', 'leopoldo.lugones@clinic.com', 3, True)
         ]
-        cursor.executemany("INSERT OR IGNORE INTO Medico (nombre, apellido, matricula, email, id_especialidad) VALUES (?, ?, ?, ?, ?)", medicos)
+        cursor.executemany("INSERT OR IGNORE INTO Medico (nombre, apellido, matricula, email, id_especialidad, activo) VALUES (?, ?, ?, ?, ?, ?)", medicos)
 
         # --- 3. Poblar Pacientes ---
         # (Solo si la tabla está vacía)
         cursor.execute("SELECT COUNT(*) FROM Paciente")
-        if cursor.fetchone()[0] == 0:
+        if cursor.fetchone()[0] < 15:
             print("Poblando pacientes y creando historiales...")
             pacientes = [
-                ('Juan', 'Perez', '30.123.456', '1983-05-20', 'juan.perez@email.com', '351-111222'),
-                ('Maria', 'Gomez', '35.456.789', '1990-11-02', 'maria.gomez@email.com', '351-333444'),
-                ('Lucas', 'Torres', '40.789.123', '1998-02-14', 'lucas.torres@email.com', '351-555666'),
-                ('Sofia', 'Diaz', '38.987.654', '1995-07-30', 'sofia.diaz@email.com', '351-777888')
+                # 4 existentes con DNI corregido
+                ('Juan', 'Perez', '30123456', '1983-05-20', 'juan.perez@email.com', '351-111222', True),
+                ('Maria', 'Gomez', '35456789', '1990-11-02', 'maria.gomez@email.com', '351-333444', True),
+                ('Lucas', 'Torres', '40789123', '1998-02-14', 'lucas.torres@email.com', '351-555666', True),
+                ('Sofia', 'Diaz', '38987654', '1995-07-30', 'sofia.diaz@email.com', '351-777888', True),
+                # 11 nuevos
+                ('Carlos', 'Ruiz', '28555666', '1980-01-15', 'carlos.ruiz@email.com', '351-222333', True),
+                ('Laura', 'Fernandez', '33888999', '1988-08-25', 'laura.fernandez@email.com', '351-444555', True),
+                ('Pedro', 'Gonzalez', '42111222', '2000-03-10', 'pedro.gonzalez@email.com', '351-666777', True),
+                ('Ana', 'Martinez', '31444555', '1985-12-05', 'ana.martinez@email.com', '351-888999', True),
+                ('Diego', 'Lopez', '29777888', '1982-06-20', 'diego.lopez@email.com', '351-101010', True),
+                ('Valentina', 'Sanchez', '45333444', '2003-09-18', 'valentina.sanchez@email.com', '351-121212', True),
+                ('Javier', 'Romero', '25666777', '1975-11-30', 'javier.romero@email.com', '351-131313', True),
+                ('Camila', 'Alvarez', '41999000', '1999-04-22', 'camila.alvarez@email.com', '351-141414', True),
+                ('Mateo', 'Torres', '43222111', '2001-07-12', 'mateo.torres@email.com', '351-151515', True),
+                ('Isabella', 'Gutierrez', '36555444', '1992-10-01', 'isabella.gutierrez@email.com', '351-161616', True),
+                ('Sebastian', 'Castro', '39888777', '1997-02-28', 'sebastian.castro@email.com', '351-171717', True)
             ]
             
-            fecha_hoy = datetime.date.today().isoformat()
-            
-            for paciente in pacientes:
-                # Insertar el paciente
-                cursor.execute(
-                    "INSERT INTO Paciente (nombre, apellido, dni, fecha_nacimiento, email, telefono) VALUES (?, ?, ?, ?, ?, ?)",
-                    paciente
-                )
+            # Insertar todos los pacientes
+            cursor.executemany("INSERT OR IGNORE INTO Paciente (nombre, apellido, dni, fecha_nacimiento, email, telefono, activo) VALUES (?, ?, ?, ?, ?, ?, ?)", pacientes)
 
         else:
             print("Pacientes ya existentes, omitiendo poblamiento.")

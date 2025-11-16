@@ -1,0 +1,56 @@
+.toggle-filter-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem; /* Mayor separación */
+}
+
+.toggle-switch-wrapper {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.toggle-switch-checkbox {
+    display: none; /* Ocultamos el checkbox real */
+}
+
+.toggle-switch-wrapper .toggle-switch-label {
+    display: block;
+    position: relative;
+    width: 60px;   /* Más ancho */
+    height: 32px;  /* Más alto */
+    background-color: #ccc;
+    border-radius: 16px; /* Bordes redondeados */
+    transition: background-color 0.2s ease-in-out;
+}
+
+.toggle-switch-wrapper .toggle-switch-label::after {
+    content: '';
+    position: absolute;
+    top: 3px;      /* Centrado vertical */
+    left: 3px;     /* Posición inicial */
+    width: 26px;   /* Círculo más grande */
+    height: 26px;  /* Círculo más grande */
+    background-color: white;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease-in-out;
+}
+
+/* Estado Activado (isChecked = true) */
+.toggle-switch-checkbox:checked + .toggle-switch-label {
+    background-color: #28a745; /* Verde para 'activo' o 'filtrado' */
+}
+
+/* Movimiento del círculo al activar */
+.toggle-switch-checkbox:checked + .toggle-switch-label::after {
+    transform: translateX(28px); /* Nueva posición */
+}
+
+.toggle-filter-text {
+    font-size: 1rem; /* Texto más grande */
+    font-weight: 500; /* Ligeramente más grueso */
+    color: #212529;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* Espacio entre icono y texto */
+}

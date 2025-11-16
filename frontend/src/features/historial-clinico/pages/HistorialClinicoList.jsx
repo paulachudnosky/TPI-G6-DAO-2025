@@ -10,6 +10,7 @@ const HistorialClinicoList = () => {
     const [consultas, setConsultas] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [validationError, setValidationError] = useState(null); // 1. Nuevo estado para el mensaje de validación
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams(); // Hook para manejar parámetros de URL
 
@@ -62,11 +63,12 @@ const HistorialClinicoList = () => {
     // handleSearch ahora solo se llama explícitamente
     const handleSearch = async (pacienteIdToSearch = selectedPaciente) => { // Usa selectedPaciente por defecto
         if (!pacienteIdToSearch) {
-            alert('Por favor, seleccione un paciente.');
+            setValidationError('Por favor, seleccione un paciente.'); // 2. Mostramos el mensaje en pantalla
             setConsultas([]);
             setSearchParams({});
             return;
         }
+        setValidationError(null); // Limpiamos el mensaje si la búsqueda es válida
         setLoading(true);
         setError(null);
         setConsultas([]); // Limpiar resultados anteriores
@@ -84,6 +86,7 @@ const HistorialClinicoList = () => {
 
     const handlePacienteChange = (e) => {
         setSelectedPaciente(e.target.value);
+        setValidationError(null); // 3. Limpiamos el mensaje al cambiar la selección
         // NO llamamos a handleSearch aquí. Se llamará solo con el botón.
     };
 
@@ -121,12 +124,15 @@ const HistorialClinicoList = () => {
                     <button
                         className="btn-entity-primary"
                         onClick={() => handleSearch()} // Llama a handleSearch al hacer clic
-                        disabled={loading || !selectedPaciente} // Deshabilita si está cargando o no hay paciente seleccionado
+                        disabled={loading} // Deshabilitamos solo mientras carga
                     >
                         {loading ? 'Buscando...' : '🔍 Buscar Historial'}
                     </button>
                 </div>
             </div>
+
+            {/* 4. Mostramos el mensaje de validación aquí */}
+            {validationError && <div className="entity-alert entity-alert-warning" style={{ textAlign: 'center' }}>{validationError}</div>}
 
             {error && <div className="entity-alert entity-alert-danger">{error}</div>}
 

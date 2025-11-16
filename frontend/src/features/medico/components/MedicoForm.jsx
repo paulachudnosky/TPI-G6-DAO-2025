@@ -8,7 +8,8 @@ const MedicoForm = ({ initialData, onSubmit }) => {
         apellido: '',
         matricula: '',
         email: '',
-        id_especialidad: ''
+        id_especialidad: '',
+        activo: true // 1. Añadimos el estado 'activo' por defecto a true
     });
 
     const [especialidades, setEspecialidades] = useState([]);
@@ -25,7 +26,8 @@ const MedicoForm = ({ initialData, onSubmit }) => {
                 apellido: initialData.apellido || '',
                 matricula: initialData.matricula || '',
                 email: initialData.email || '',
-                id_especialidad: initialData.id_especialidad || ''
+                id_especialidad: initialData.id_especialidad || '',
+                activo: initialData.activo !== undefined ? initialData.activo : true // 2. Manejamos el estado 'activo'
             });
         }
     }, [initialData]);
@@ -43,10 +45,12 @@ const MedicoForm = ({ initialData, onSubmit }) => {
     };
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type, checked } = e.target;
+        // 3. Lógica para manejar tanto inputs normales como el checkbox/switch
+        const val = type === 'checkbox' ? checked : value;
         setFormData(prev => ({
             ...prev,
-            [name]: value
+            [name]: val
         }));
     };
 
@@ -69,6 +73,7 @@ const MedicoForm = ({ initialData, onSubmit }) => {
                     value={formData.nombre}
                     onChange={handleChange}
                     required
+                    maxLength="20"
                     placeholder="Ingrese el nombre del médico"
                 />
             </div>
@@ -85,6 +90,7 @@ const MedicoForm = ({ initialData, onSubmit }) => {
                     value={formData.apellido}
                     onChange={handleChange}
                     required
+                    maxLength="20"
                     placeholder="Ingrese el apellido del médico"
                 />
             </div>
@@ -101,7 +107,9 @@ const MedicoForm = ({ initialData, onSubmit }) => {
                     value={formData.matricula}
                     onChange={handleChange}
                     required
-                    placeholder="Ej: MP12345"
+                    minLength="4"
+                    maxLength="15"
+                    placeholder="Ej: MP-12345"
                 />
                 <span className="entity-form-help">
                     Ingrese la matrícula profesional del médico
@@ -144,12 +152,34 @@ const MedicoForm = ({ initialData, onSubmit }) => {
                     className="entity-form-input"
                     value={formData.email}
                     onChange={handleChange}
+                    maxLength="100"
                     placeholder="medico@ejemplo.com"
                 />
                 <span className="entity-form-help">
                     Correo electrónico de contacto (opcional)
                 </span>
             </div>
+
+            {/* 4. Nuevo campo para el estado del médico (solo visible en modo edición) */}
+            {initialData && (
+                <div className="entity-form-group">
+                    <label htmlFor="activo" className="entity-form-label">
+                        Estado
+                    </label>
+                    <div className="entity-form-switch">
+                        <input
+                            type="checkbox"
+                            id="activo"
+                            name="activo"
+                            checked={formData.activo}
+                            onChange={handleChange}
+                            className="entity-form-switch-input"
+                        />
+                        <label htmlFor="activo" className="entity-form-switch-label"></label>
+                        <span className="entity-form-switch-text">{formData.activo ? 'Activo' : 'Inactivo'}</span>
+                    </div>
+                </div>
+            )}
 
             <div className="entity-form-actions">
                 <button type="submit" className="btn-entity-primary">

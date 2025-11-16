@@ -4,9 +4,12 @@ import apiClient from '../../../services/apiClient';
 // ¡IMPORTANTE! No debe tener una barra al final ("/") para que coincida con el backend.
 const URL_RESOURCE = '/pacientes';
 
-export const getPacientes = async () => {
-    // Llama a GET /pacientes
-    const response = await apiClient.get(URL_RESOURCE);
+export const getPacientes = async (incluirInactivos = false) => {
+    // Llama a GET /pacientes o GET /pacientes?incluir_inactivos=true
+    const params = {
+        incluir_inactivos: incluirInactivos
+    };
+    const response = await apiClient.get(URL_RESOURCE, { params });
     return response.data;
 };
 

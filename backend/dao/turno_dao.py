@@ -415,11 +415,13 @@ def obtener_turnos_por_dia(fecha_str):
             """SELECT t.id_turno, t.fecha_hora_inicio, t.fecha_hora_fin, t.estado,
                       p.id_paciente, p.nombre AS paciente_nombre, p.apellido AS paciente_apellido,
                       m.id_medico, m.nombre AS medico_nombre, m.apellido AS medico_apellido,
-                      tc.id_tipo, tc.nombre AS tipo_consulta_nombre
+                      tc.id_tipo, tc.nombre AS tipo_consulta_nombre,
+                      e.nombre AS especialidad_nombre
                FROM Turno t
                JOIN Paciente p ON t.id_paciente = p.id_paciente
                JOIN Medico m ON t.id_medico = m.id_medico
                JOIN TipoConsulta tc ON t.id_tipo_consulta = tc.id_tipo
+               LEFT JOIN Especialidad e ON m.id_especialidad = e.id_especialidad
                WHERE DATE(t.fecha_hora_inicio) = ?
                ORDER BY t.fecha_hora_inicio ASC""",
             (fecha_str,)

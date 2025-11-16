@@ -31,11 +31,11 @@ const PacienteView = () => {
         <div className="entity-container">
             <div className="entity-header">
                 <h2>👁️ Detalle del Paciente</h2>
-                <div>
+                <div className="entity-gap-2" style={{ display: 'flex' }}>
                     <button className="btn-entity-primary" onClick={() => navigate(`/pacientes/${id}/editar`)}>
                         ✏️ Editar
                     </button>
-                    <button className="btn-entity-secondary" onClick={() => navigate('/pacientes')}>
+                    <button className="btn-entity-secondary" onClick={() => navigate('/pacientes')} style={{ marginLeft: '0.5rem' }}>
                         ← Volver a la lista
                     </button>
                 </div>

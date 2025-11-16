@@ -23,3 +23,18 @@
     --entity-primary-light: #cfe2ff;
 }
 */
+
+/* Estilo para la barra de filtros (donde está el switch) */
+.entity-filter-bar {
+    /* Quitamos el fondo y el borde para un look más limpio */
+    padding-bottom: 1rem; /* Mantenemos un espacio inferior */
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: flex-end; /* Alineamos el interruptor a la derecha */
+}
+
+/* Estilo para atenuar las filas de médicos inactivos */
+.inactive-row {
+    opacity: 0.6;
+    background-color: #f8f9fa; /* Fondo ligeramente gris para diferenciar */
+}

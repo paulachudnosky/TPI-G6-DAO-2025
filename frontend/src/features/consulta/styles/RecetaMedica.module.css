@@ -142,3 +142,12 @@
     color: #888;
     max-width: 200px;
 }
+
+.firmaImagen {
+  max-width: 150px; /* Ajusta el ancho máximo de la firma */
+  height: auto;     /* Mantiene la proporción de la imagen */
+  margin-bottom: 10px; /* Añade un espacio debajo de la firma */
+  display: block;   /* Asegura que ocupe su propia línea */
+  margin-left: auto; /* Centra la firma horizontalmente */
+  margin-right: auto;/* Centra la firma horizontalmente */
+}

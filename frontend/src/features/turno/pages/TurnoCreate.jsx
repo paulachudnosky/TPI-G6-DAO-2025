@@ -92,10 +92,15 @@ const TurnoCreate = () => {
                 tipoConsultaService.getAll()
             ]);
 
-            setPacientes(pacientesData);
-            setEspecialidades(especialidadesData);
-            setMedicos(medicosData);
-            setMedicosOriginal(medicosData);
+            // Filtrar para mostrar solo pacientes y médicos activos
+            const pacientesActivos = pacientesData.filter(p => p.activo);
+            const especialidadesActivas = especialidadesData.filter(e => e.activo);
+            const medicosActivos = medicosData.filter(m => m.activo);
+
+            setPacientes(pacientesActivos);
+            setEspecialidades(especialidadesActivas);
+            setMedicos(medicosActivos);
+            setMedicosOriginal(medicosActivos);
             setTiposConsulta(tiposConsultaData);
         } catch (err) {
             setError('Error al cargar los datos necesarios.');

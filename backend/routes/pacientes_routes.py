@@ -5,8 +5,9 @@ pacientes_bp = Blueprint('pacientes_routes', __name__, url_prefix='/pacientes')
 
 @pacientes_bp.route('/', methods=['GET'])
 def get_pacientes():
-    """Obtiene todos los pacientes."""
-    pacientes = paciente_dao.obtener_pacientes()
+    """Obtiene todos los pacientes, con opción de incluir inactivos."""
+    incluir_inactivos = request.args.get('incluir_inactivos', 'false').lower() == 'true'
+    pacientes = paciente_dao.obtener_pacientes(incluir_inactivos=incluir_inactivos)
     return jsonify(pacientes)
 
 @pacientes_bp.route('', methods=['POST'])
@@ -27,7 +28,8 @@ def create_paciente():
             dni,
             data.get('fecha_nacimiento'),
             data.get('email'),
-            data.get('telefono')
+            data.get('telefono'),
+            data.get('activo', True)
         )
         return jsonify(nuevo_paciente), 201
     except ValueError as e:
@@ -57,10 +59,11 @@ def update_paciente(id_paciente):
     if not data.get('nombre') or not data.get('apellido') or not data.get('dni'):
         return jsonify({"error": "Nombre, apellido y DNI son obligatorios"}), 400
         
+    activo = data.get('activo', True)
     try:
         paciente_actualizado = paciente_dao.actualizar_paciente(
             id_paciente, data.get('nombre'), data.get('apellido'), data.get('dni'),
-            data.get('fecha_nacimiento'), data.get('email'), data.get('telefono')
+            data.get('fecha_nacimiento'), data.get('email'), data.get('telefono'), activo
         )
         return jsonify(paciente_actualizado), 200
     except ValueError as e:
@@ -69,10 +72,10 @@ def update_paciente(id_paciente):
         return jsonify({"error": f"Error interno: {str(e)}"}), 500
 
 def delete_paciente(id_paciente):
-    """Elimina un paciente."""
+    """Realiza la baja lógica de un paciente."""
     try:
         paciente_dao.eliminar_paciente(id_paciente)
-        return jsonify({"mensaje": "Paciente y su historial eliminados exitosamente"}), 200
+        return jsonify({"mensaje": "Paciente desactivado exitosamente"}), 200
     except ValueError as e:
         return jsonify({"error": str(e)}), 409
     except Exception as e:

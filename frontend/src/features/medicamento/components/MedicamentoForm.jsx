@@ -15,6 +15,22 @@ const MedicamentoForm = ({ initialData, onSubmit }) => {
     const [loadingTipos, setLoadingTipos] = useState(true);
     const [errorTipos, setErrorTipos] = useState(null);
 
+    // 1. Lista de formas farmacéuticas para el nuevo select
+    const formasFarmaceuticasPosibles = [
+        'Comprimido',
+        'Cápsula',
+        'Jarabe',
+        'Solución',
+        'Inyectable',
+        'Crema',
+        'Gel',
+        'Ungüento',
+        'Polvo',
+        'Supositorio',
+        'Aerosol',
+        'Gotas'
+    ];
+
     useEffect(() => {
         const loadTipos = async () => {
             try {
@@ -73,6 +89,7 @@ const MedicamentoForm = ({ initialData, onSubmit }) => {
                         value={formData.nombre}
                         onChange={handleChange}
                         required
+                        maxLength="100"
                         placeholder="Ej: Paracetamol 500mg"
                     />
                 </div>
@@ -86,6 +103,7 @@ const MedicamentoForm = ({ initialData, onSubmit }) => {
                         value={formData.codigo_nacional}
                         onChange={handleChange}
                         required
+                        maxLength="20"
                         placeholder="Ej: 123456.7"
                     />
                 </div>
@@ -120,15 +138,21 @@ const MedicamentoForm = ({ initialData, onSubmit }) => {
                 
                 <div className="entity-form-group">
                     <label htmlFor="forma_farmaceutica" className="entity-form-label">Forma Farmacéutica</label>
-                    <input
-                        type="text"
+                    {/* 2. Reemplazamos el input por un select */}
+                    <select
                         id="forma_farmaceutica"
                         name="forma_farmaceutica"
                         className="entity-form-input"
                         value={formData.forma_farmaceutica}
                         onChange={handleChange}
-                        placeholder="Ej: Comprimido"
-                    />
+                    >
+                        <option value="">Seleccione una forma</option>
+                        {formasFarmaceuticasPosibles.map(forma => (
+                            <option key={forma} value={forma}>
+                                {forma}
+                            </option>
+                        ))}
+                    </select>
                 </div>
             </div>
             
@@ -142,6 +166,7 @@ const MedicamentoForm = ({ initialData, onSubmit }) => {
                     className="entity-form-input"
                     value={formData.presentacion}
                     onChange={handleChange}
+                    maxLength="100"
                     placeholder="Ej: Caja de 20 comprimidos"
                 />
             </div>
@@ -155,6 +180,7 @@ const MedicamentoForm = ({ initialData, onSubmit }) => {
                     className="entity-form-input"
                     value={formData.descripcion}
                     onChange={handleChange}
+                    maxLength="500"
                     placeholder="Ingrese la descripción del medicamento"
                     rows="3"
                 />

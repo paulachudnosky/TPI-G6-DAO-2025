@@ -7,7 +7,6 @@ const TipoConsultaTable = ({ tipoConsultas, onEdit, onDelete }) => {
             <table className="table table-striped table-hover align-middle">
                 <thead className="table-light">
                     <tr>
-                        <th>ID</th>
                         <th>Nombre</th>
                         {showActions && <th className="text-end">Acciones</th>}
                     </tr>
@@ -15,7 +14,6 @@ const TipoConsultaTable = ({ tipoConsultas, onEdit, onDelete }) => {
                 <tbody>
                     {tipoConsultas.map((tipoConsulta) => (
                         <tr key={tipoConsulta.id}>
-                            <td>{tipoConsulta.id}</td>
                             <td>{tipoConsulta.nombre}</td>
                             {showActions && (
                                 <td className="text-end">

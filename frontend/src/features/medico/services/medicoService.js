@@ -7,6 +7,12 @@ export const getMedicos = async () => {
     return response.data;
 };
 
+// Nueva función para obtener solo médicos activos (para selectores y listas)
+export const getMedicosActivos = async () => {
+    const response = await apiClient.get(`${MEDICO_BASE_URL}?activo=true`);
+    return response.data;
+};
+
 export const getMedico = async (id) => {
     const response = await apiClient.get(`${MEDICO_BASE_URL}/${id}`);
     return response.data;
@@ -25,5 +31,11 @@ export const updateMedico = async (id, medicoData) => {
 
 export const deleteMedico = async (id) => {
     const response = await apiClient.delete(`${MEDICO_BASE_URL}/${id}`);
+    return response.data;
+};
+
+// Nueva función para baja/alta lógica
+export const setMedicoStatus = async (id, activo) => {
+    const response = await apiClient.patch(`${MEDICO_BASE_URL}/${id}`, { activo });
     return response.data;
 };

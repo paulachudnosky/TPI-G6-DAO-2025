@@ -1,5 +1,5 @@
 class Paciente:
-    def __init__(self, nombre, apellido, dni, fecha_nacimiento, email, telefono, id_paciente=None):
+    def __init__(self, nombre, apellido, dni, fecha_nacimiento, email, telefono, id_paciente=None, activo=True):
         self.id_paciente = id_paciente
         self.nombre = nombre
         self.apellido = apellido
@@ -7,6 +7,7 @@ class Paciente:
         self.fecha_nacimiento = fecha_nacimiento
         self.email = email
         self.telefono = telefono
+        self.activo = activo
 
     def to_dict(self):
         return {
@@ -16,5 +17,6 @@ class Paciente:
             "dni": self.dni,
             "fecha_nacimiento": self.fecha_nacimiento,
             "email": self.email,
-            "telefono": self.telefono
+            "telefono": self.telefono,
+            "activo": self.activo
         }

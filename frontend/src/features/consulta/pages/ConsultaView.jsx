@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'; // Importamos useSearchParams
 import { getConsultaById, getRecetaPorConsulta } from '../services/consultaService';
+import RecetaMedica from '../components/RecetaMedica'; // 1. Importamos el componente correcto
 import '../styles/consulta.css';
 
 const ConsultaView = () => {
@@ -101,7 +102,31 @@ const ConsultaView = () => {
             {loadingReceta ? (
                 <div className="entity-loading">Cargando receta...</div>
             ) : (
-                <RecetaView receta={receta} />
+                receta && receta.medicamentos && receta.medicamentos.length > 0 ? ( // Si existe la receta y tiene medicamentos, la mostramos
+                    <div className="consulta-section">
+                        <h3 className="consulta-section-title">Receta Adjunta</h3>
+                        <RecetaMedica
+                            fechaEmision={new Date(receta.fecha_emision).toLocaleDateString('es-AR')}
+                            numeroRecetario={receta.id_receta}
+                            obraSocial="JERARQUICOS SALUD" // Placeholder
+                            numeroAfiliado={`${consulta.paciente.dni}/00`} // Placeholder
+                            dniPaciente={consulta.paciente.dni}
+                            diagnostico={consulta.motivo_consulta}
+                            plan="PLAN 310" // Placeholder
+                            medicamentos={receta.medicamentos.map(m => ({ ...m, cantidad: 1 }))}
+                            nombreDoctor={`${consulta.medico.apellido}, ${consulta.medico.nombre}`}
+                            matriculaDoctor={consulta.medico.matricula}
+                            especialidadDoctor={consulta.medico.especialidad}
+                            urlQr={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=https://www.clinicacurae.com/verificar/${receta.id_receta}`}
+                            firmaDoctorUrl="/digitalizacion-de-firmas-personales-para-documentos.png"
+                        />
+                    </div>
+                ) : ( // Si no existe o no tiene medicamentos, mostramos un mensaje
+                    <div className="consulta-section">
+                        <h3 className="consulta-section-title">Receta</h3>
+                        <p className="consulta-section-content entity-text-muted">No hay receta adjunta para esta consulta.</p>
+                    </div>
+                )
             )}
         </div>
     );

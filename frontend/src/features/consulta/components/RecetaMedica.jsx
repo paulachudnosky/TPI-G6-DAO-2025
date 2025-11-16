@@ -13,12 +13,11 @@ const RecetaMedica = ({
   diagnostico,
   plan,
   medicamentos,
-  forma_farmaceutica, // Prop para forma farmacéutica
-  presentacion, // Prop para presentación
   nombreDoctor,
   matriculaDoctor,
   especialidadDoctor,
-  urlQr
+  urlQr,
+  firmaDoctorUrl // 1. Añadimos la prop para la URL de la firma
 }) => {
   return (
     <div className={styles.recetaContainer}>
@@ -70,11 +69,18 @@ const RecetaMedica = ({
       {/* --- Sección 5: Firma Electrónica (Footer) --- */}
       <footer className={styles.footer}>
         <div className={styles.qrSection}>
+          {/* La firma del doctor ahora se muestra aquí, encima del texto */}
+          {firmaDoctorUrl && (
+            <img src={firmaDoctorUrl} alt="Firma del Doctor" className={styles.firmaImagen} />
+          )}
           <p>Firma Electrónica:</p>
           <div className={styles.qrCodePlaceholder}>
-            {/* Aquí iría el componente de QR real */}
-            {/* <QRCode value={urlQr} size={80} /> */}
-            <span>QR</span>
+            {/* 3. Mostramos la imagen del QR si la URL existe */}
+            {urlQr ? (
+              <img src={urlQr} alt="Código QR de la receta" />
+            ) : (
+              <span>QR</span>
+            )}
           </div>
           <p className={styles.legalText}>
             La firma electrónica sustituye legalmente a la firma ológrafa según Ley 25.506.

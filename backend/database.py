@@ -39,7 +39,8 @@ def crear_tablas():
         dni TEXT NOT NULL UNIQUE,
         fecha_nacimiento TEXT,
         email TEXT UNIQUE,
-        telefono TEXT
+        telefono TEXT,
+        activo BOOLEAN NOT NULL DEFAULT 1 -- 1 para True (activo), 0 para False (inactivo)
     )''')
 
     # Especialidad
@@ -47,7 +48,8 @@ def crear_tablas():
     CREATE TABLE IF NOT EXISTS Especialidad (
         id_especialidad INTEGER PRIMARY KEY AUTOINCREMENT,
         nombre TEXT NOT NULL UNIQUE,
-        descripcion TEXT
+        descripcion TEXT,
+        activo BOOLEAN NOT NULL DEFAULT 1 -- 1 para True (activo), 0 para False (inactivo)
     )''')
 
     # Medico
@@ -59,6 +61,7 @@ def crear_tablas():
         matricula TEXT NOT NULL UNIQUE,
         email TEXT UNIQUE,
         id_especialidad INTEGER,
+        activo BOOLEAN NOT NULL DEFAULT 1, -- 1 para True (activo), 0 para False (inactivo)
         FOREIGN KEY (id_especialidad) REFERENCES Especialidad (id_especialidad)
     )''')
     

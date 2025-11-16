@@ -83,7 +83,8 @@ const ConsultaRegistro = () => {
             id_turno: turno.id_turno,
             motivo_consulta: motivoConsulta,
             observaciones: observaciones,
-            medicamentos_recetados: medicamentosRecetados.map(({ id_medicamento, indicaciones }) => ({ id_medicamento, indicaciones }))
+            medicamentos_recetados: medicamentosRecetados.map(({ id_medicamento, indicaciones }) => ({ id_medicamento, indicaciones })),
+            tiene_receta: medicamentosRecetados.length > 0 // Enviamos si la consulta tiene receta o no
         };
 
         try {

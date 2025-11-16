@@ -47,9 +47,16 @@ const ConsultaList = () => {
         setConsultaSeleccionada(consulta); // Guardamos la consulta para usar sus datos
         try {
             const dataReceta = await getRecetaPorConsulta(consulta.id_consulta);
-            setRecetaSeleccionada(dataReceta);
+            // 2. Verificamos si la receta es válida ANTES de abrir el modal
+            if (dataReceta && dataReceta.medicamentos && dataReceta.medicamentos.length > 0) {
+                setRecetaSeleccionada(dataReceta);
+            } else {
+                alert('No hay una receta con medicamentos asociada a esta consulta.');
+                setConsultaSeleccionada(null); // Limpiamos la selección
+            }
         } catch (err) {
-            alert('Error al cargar la receta.');
+            // Si el servicio da un error (ej: 404), también lo consideramos como "sin receta"
+            alert('No se encontró una receta asociada a esta consulta.');
             console.error(err);
         } finally {
             setLoadingReceta(false);
@@ -108,10 +115,11 @@ const ConsultaList = () => {
                                     <td>{c.medico.apellido}, {c.medico.nombre}</td>
                                     <td>{c.motivo_consulta || <span className="entity-text-muted">N/A</span>}</td>
                                     <td className="actions-cell">
+                                        {/* 1. Mostramos siempre el botón. La validación se hace al hacer clic. */}
                                         <button
                                             className="btn-entity-primary btn-entity-sm"
                                             onClick={() => handleVerReceta(c)}
-                                            disabled={loadingReceta}
+                                            disabled={loadingReceta && consultaSeleccionada?.id_consulta === c.id_consulta}
                                         >
                                             Ver Receta
                                         </button>
@@ -141,7 +149,9 @@ const ConsultaList = () => {
                                 nombreDoctor={`${consultaSeleccionada.medico.apellido}, ${consultaSeleccionada.medico.nombre}`}
                                 matriculaDoctor={consultaSeleccionada.medico.matricula}
                                 especialidadDoctor={consultaSeleccionada.medico.especialidad}
-                                urlQr="https://www.jerarquicos.com" // Placeholder
+                                // QR y Firma por defecto
+                                urlQr={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=https://www.clinicacurae.com/verificar/${recetaSeleccionada.id_receta}`} // QR apunta a una URL de verificación de ejemplo
+                                firmaDoctorUrl="/digitalizacion-de-firmas-personales-para-documentos.png" // Usando imagen local de la carpeta public
                             />
                     </div>
                 </div>
