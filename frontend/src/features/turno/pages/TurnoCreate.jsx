@@ -71,8 +71,29 @@ const TurnoCreate = () => {
         } else {
             setHorarios([]);
             setSlotsDisponibles([]);
+            setFecha(''); // Resetear fecha cuando no hay médico
+            setHoraSeleccionada('');
         }
     }, [idMedico]);
+
+    // Validar fecha cuando cambian los horarios del médico
+    useEffect(() => {
+        if (fecha && idMedico && horarios.length > 0) {
+            // Verificar si la fecha actual es válida para los nuevos horarios
+            const diasMap = {
+                'Domingo': 0, 'Lunes': 1, 'Martes': 2, 'Miércoles': 3,
+                'Jueves': 4, 'Viernes': 5, 'Sábado': 6
+            };
+            const diasAtencion = horarios.map(h => diasMap[h.dia_semana]).filter(d => d !== undefined);
+            const fechaObj = new Date(fecha + 'T12:00:00');
+            const diaSemana = fechaObj.getDay();
+
+            if (!diasAtencion.includes(diaSemana)) {
+                setFecha(''); // Resetear si la fecha ya no es válida
+                setHoraSeleccionada('');
+            }
+        }
+    }, [horarios]);
 
     // Cargar slots cuando cambia fecha o médico
     useEffect(() => {
@@ -273,6 +294,58 @@ const TurnoCreate = () => {
         return hoy.toISOString().split('T')[0];
     };
 
+    // Obtener los días de la semana en los que el médico atiende
+    const getDiasAtencion = () => {
+        if (!horarios || horarios.length === 0) return [];
+
+        const diasMap = {
+            'Domingo': 0,
+            'Lunes': 1,
+            'Martes': 2,
+            'Miércoles': 3,
+            'Jueves': 4,
+            'Viernes': 5,
+            'Sábado': 6
+        };
+
+        return horarios.map(h => diasMap[h.dia_semana]).filter(d => d !== undefined);
+    };
+
+    // Validar si una fecha está en un día de atención del médico
+    const esFechaValida = (fechaStr) => {
+        if (!idMedico || !fechaStr) return true;
+
+        const diasAtencion = getDiasAtencion();
+        if (diasAtencion.length === 0) return false;
+
+        const fecha = new Date(fechaStr + 'T12:00:00');
+        const diaSemana = fecha.getDay();
+
+        return diasAtencion.includes(diaSemana);
+    };
+
+    // Manejar cambio de fecha con validación
+    const handleFechaChange = (e) => {
+        const nuevaFecha = e.target.value;
+
+        if (!idMedico) {
+            setFecha(nuevaFecha);
+            setHoraSeleccionada('');
+            return;
+        }
+
+        if (esFechaValida(nuevaFecha)) {
+            setFecha(nuevaFecha);
+            setHoraSeleccionada('');
+        } else {
+            const diasAtencion = getDiasAtencion();
+            const diasNombres = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+            const diasTexto = diasAtencion.map(d => diasNombres[d]).join(', ');
+
+            alert(`⚠️ El médico seleccionado solo atiende los días: ${diasTexto}`);
+        }
+    };
+
     return (
         <div className="entity-container turno-create-container">
             <div className="entity-header">
@@ -415,13 +488,21 @@ const TurnoCreate = () => {
                                 type="date"
                                 className="form-input"
                                 value={fecha}
-                                onChange={(e) => {
-                                    setFecha(e.target.value);
-                                    setHoraSeleccionada('');
-                                }}
+                                onChange={handleFechaChange}
                                 min={getFechaMinima()}
                                 required
+                                disabled={!idMedico}
                             />
+                            {idMedico && horarios.length > 0 && (
+                                <small className="form-hint">
+                                    📅 Días de atención: {horarios.map(h => h.dia_semana).join(', ')}
+                                </small>
+                            )}
+                            {idMedico && horarios.length === 0 && (
+                                <small className="form-hint text-warning">
+                                    ⚠️ Este médico no tiene horarios configurados
+                                </small>
+                            )}
                         </div>
 
                         <div className="form-group">

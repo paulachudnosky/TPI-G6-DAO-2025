@@ -5,7 +5,12 @@ body {
     color: #333;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     margin: 0;
     padding: 0;
 }
@@ -78,5 +83,41 @@ a:hover {
     color: white;
     position: relative;
     bottom: 0;
+    width: 100%;
+}
+
+/* Estilos para el navbar elegante */
+.navbar-elegant {
+    border-bottom: 3px solid #00028f;
+    background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%) !important;
+}
+
+/* Estilos para el título del hospital en el navbar */
+.hospital-title {
+    font-family: 'Georgia', 'Garamond', 'Times New Roman', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #00028f 0%, #0d47a1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 1px;
+    text-shadow: none;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.hospital-title::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #00028f, #0d47a1);
+    transition: width 0.3s ease;
+}
+
+.navbar-brand:hover .hospital-title::after {
     width: 100%;
 }

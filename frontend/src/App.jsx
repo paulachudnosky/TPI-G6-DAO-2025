@@ -70,6 +70,7 @@ function App() {
 
           <Route path="/consulta" element={<ConsultaAtencion />} />
           <Route path="/consulta/registrar" element={<ConsultaRegistro />} />
+          <Route path="/consultas/nueva" element={<ConsultaRegistro />} />
           <Route path="/consultas/historial" element={<ConsultaList />} />
           <Route path="/consulta/:id" element={<ConsultaView />} />
 

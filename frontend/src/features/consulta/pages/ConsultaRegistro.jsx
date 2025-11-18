@@ -1,24 +1,51 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { registrarConsultaCompleta } from '../services/consultaService';
-import { getMedicamentos } from '../../medicamento/services/medicamentoService'; // Asumimos que este servicio existe
+import { getMedicamentos } from '../../medicamento/services/medicamentoService';
+import { getTurnoById } from '../../turno/services/turnoService';
 import '../styles/consulta.css';
 
 const ConsultaRegistro = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const turno = location.state?.turno;
+    const [searchParams] = useSearchParams();
 
+    // Obtener turno desde location.state o cargar por ID desde URL
+    const turnoFromState = location.state?.turno;
+    const idTurnoFromUrl = searchParams.get('id_turno');
+
+    const [turno, setTurno] = useState(turnoFromState);
     const [motivoConsulta, setMotivoConsulta] = useState('');
     const [observaciones, setObservaciones] = useState('');
     const [medicamentosRecetados, setMedicamentosRecetados] = useState([]);
-    
+
     const [medicamentosDisponibles, setMedicamentosDisponibles] = useState([]);
     const [medicamentoSeleccionado, setMedicamentoSeleccionado] = useState('');
     const [indicaciones, setIndicaciones] = useState('');
 
     const [loading, setLoading] = useState(false);
+    const [loadingTurno, setLoadingTurno] = useState(!turnoFromState && !!idTurnoFromUrl);
     const [error, setError] = useState(null);
+
+    // Cargar turno si viene por URL
+    useEffect(() => {
+        const loadTurno = async () => {
+            if (!turnoFromState && idTurnoFromUrl) {
+                setLoadingTurno(true);
+                try {
+                    const turnoData = await getTurnoById(idTurnoFromUrl);
+                    setTurno(turnoData);
+                } catch (err) {
+                    console.error("Error al cargar el turno", err);
+                    setError("No se pudo cargar la información del turno.");
+                    setTimeout(() => navigate('/consulta'), 2000);
+                } finally {
+                    setLoadingTurno(false);
+                }
+            }
+        };
+        loadTurno();
+    }, [idTurnoFromUrl, turnoFromState, navigate]);
 
     // Cargar la lista de medicamentos disponibles para el selector
     useEffect(() => {
@@ -34,13 +61,13 @@ const ConsultaRegistro = () => {
         loadMedicamentos();
     }, []);
 
-    // Si no hay datos del turno, redirigir
+    // Si no hay datos del turno ni ID en URL, redirigir
     useEffect(() => {
-        if (!turno) {
+        if (!loadingTurno && !turno && !idTurnoFromUrl) {
             alert('No se ha seleccionado un turno válido. Volviendo a la pantalla de atención.');
             navigate('/consulta');
         }
-    }, [turno, navigate]);
+    }, [turno, loadingTurno, idTurnoFromUrl, navigate]);
 
     const handleAddMedicamento = () => {
         if (!medicamentoSeleccionado || !indicaciones) {
@@ -99,6 +126,14 @@ const ConsultaRegistro = () => {
         }
     };
 
+    if (loadingTurno) {
+        return (
+            <div className="entity-container">
+                <div className="entity-loading">Cargando información del turno...</div>
+            </div>
+        );
+    }
+
     if (!turno) return null; // Evita renderizar si no hay turno
 
     return (
@@ -111,8 +146,8 @@ const ConsultaRegistro = () => {
             </div>
 
             <div className="consulta-section">
-                <p><strong>Paciente:</strong> {turno.paciente_apellido}, {turno.paciente_nombre}</p>
-                <p><strong>Médico:</strong> {turno.medico_apellido}, {turno.medico_nombre}</p>
+                <p><strong>Paciente:</strong> {turno.paciente?.apellido || turno.paciente_apellido}, {turno.paciente?.nombre || turno.paciente_nombre}</p>
+                <p><strong>Médico:</strong> {turno.medico?.apellido || turno.medico_apellido}, {turno.medico?.nombre || turno.medico_nombre}</p>
                 <p><strong>Hora del Turno:</strong> {new Date(turno.fecha_hora_inicio).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}</p>
             </div>
 
